@@ -55,27 +55,56 @@ let selectedNumbers = [];
 let isAutoMode = true;
 let myNumbers = [];
 
+function hideMainMenu() {
+  document.getElementById('mainMenu').style.display = 'none';
+  document.getElementById('backBtn').style.display = 'block';
+}
+
+function showMainMenu() {
+  document.getElementById('mainMenu').style.display = 'block';
+  document.getElementById('backBtn').style.display = 'none';
+}
+
+function goBack() {
+  showMainMenu();
+  const resultBox = document.getElementById('result');
+  resultBox.innerHTML = '원하는 메뉴를 선택해주세요!';
+  resultBox.className = 'result-box empty';
+}
+
 function showFortune() {
+  hideMainMenu();
   const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
   const resultBox = document.getElementById('result');
-  resultBox.innerHTML = `<strong>🔮 오늘의 운세</strong><br><br><div style="font-size: 1.2rem; line-height: 1.5;">${randomFortune}</div>`;
+  resultBox.innerHTML = `
+    <div style="text-align: center; padding: 20px;">
+      <h2 style="color: #667eea; margin-bottom: 30px;">🔮 오늘의 운세</h2>
+      <div style="font-size: 1.4rem; line-height: 1.8; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">
+        ${randomFortune}
+      </div>
+      <button onclick="showFortune()" style="margin-top: 30px; background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">다른 운세 보기</button>
+    </div>
+  `;
   resultBox.className = 'result-box';
 }
 
 function showLotto() {
+  hideMainMenu();
   const resultBox = document.getElementById('result');
   resultBox.innerHTML = `
-    <strong>🎰 로또 구매하기</strong><br><br>
-    <div style="margin-bottom: 20px;">
-      <button onclick="setAutoMode()" id="autoBtn" style="background: #667eea; color: white; border: none; padding: 10px 20px; margin: 5px; border-radius: 20px; cursor: pointer;">자동</button>
-      <button onclick="setManualMode()" id="manualBtn" style="background: #ccc; color: #666; border: none; padding: 10px 20px; margin: 5px; border-radius: 20px; cursor: pointer;">수동</button>
+    <div style="padding: 20px;">
+      <h2 style="color: #ff6b6b; margin-bottom: 20px; text-align: center;">🎰 로또 구매하기</h2>
+      <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 25px;">
+        <button onclick="setAutoMode()" id="autoBtn" style="background: #ff6b6b; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">자동</button>
+        <button onclick="setManualMode()" id="manualBtn" style="background: #ccc; color: #666; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">수동</button>
+      </div>
+      <div id="numberSelection" style="margin-bottom: 25px;"></div>
+      <div style="text-align: center; margin-bottom: 25px;">
+        <button onclick="buyLotto()" style="background: #28a745; color: white; border: none; padding: 15px 35px; border-radius: 25px; cursor: pointer; font-size: 1.2rem;">로또 구매하기</button>
+      </div>
+      <div id="myLotto"></div>
+      <div id="checkResult"></div>
     </div>
-    <div id="numberSelection"></div>
-    <div style="margin-top: 20px;">
-      <button onclick="buyLotto()" style="background: #28a745; color: white; border: none; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-size: 1.1rem;">로또 구매하기</button>
-    </div>
-    <div id="myLotto" style="margin-top: 20px;"></div>
-    <div id="checkResult" style="margin-top: 20px;"></div>
   `;
   resultBox.className = 'result-box';
   setAutoMode();
@@ -84,15 +113,15 @@ function showLotto() {
 function setAutoMode() {
   isAutoMode = true;
   selectedNumbers = [];
-  document.getElementById('autoBtn').style.background = '#667eea';
+  document.getElementById('autoBtn').style.background = '#ff6b6b';
   document.getElementById('autoBtn').style.color = 'white';
   document.getElementById('manualBtn').style.background = '#ccc';
   document.getElementById('manualBtn').style.color = '#666';
   
   document.getElementById('numberSelection').innerHTML = `
-    <div style="padding: 20px; background: #f8f9fa; border-radius: 10px; margin: 10px 0;">
-      <p>자동 선택 모드입니다.</p>
-      <p>번호가 자동으로 선택됩니다.</p>
+    <div style="padding: 25px; background: #fff3cd; border-radius: 15px; text-align: center;">
+      <p style="font-size: 1.1rem; margin-bottom: 10px;">🎲 자동 선택 모드</p>
+      <p style="color: #666;">번호가 자동으로 선택됩니다</p>
     </div>
   `;
 }
@@ -102,16 +131,24 @@ function setManualMode() {
   selectedNumbers = [];
   document.getElementById('autoBtn').style.background = '#ccc';
   document.getElementById('autoBtn').style.color = '#666';
-  document.getElementById('manualBtn').style.background = '#667eea';
+  document.getElementById('manualBtn').style.background = '#ff6b6b';
   document.getElementById('manualBtn').style.color = 'white';
   
-  let numbersHtml = '<div style="padding: 20px; background: #f8f9fa; border-radius: 10px; margin: 10px 0;"><p>번호를 선택해주세요 (6개)</p><div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; margin-top: 10px;">';
+  let numbersHtml = `
+    <div style="padding: 25px; background: #fff3cd; border-radius: 15px;">
+      <p style="text-align: center; font-size: 1.1rem; margin-bottom: 20px;">✋ 번호를 선택해주세요 (6개)</p>
+      <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 8px; max-width: 500px; margin: 0 auto;">
+  `;
   
   for (let i = 1; i <= 45; i++) {
-    numbersHtml += `<button onclick="selectNumber(${i})" id="num${i}" style="width: 35px; height: 35px; border: 1px solid #ddd; background: white; border-radius: 50%; cursor: pointer; font-size: 0.9rem;">${i}</button>`;
+    numbersHtml += `<button onclick="selectNumber(${i})" id="num${i}" style="width: 45px; height: 45px; border: 2px solid #ddd; background: white; border-radius: 50%; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.2s;">${i}</button>`;
   }
   
-  numbersHtml += '</div><div id="selectedCount" style="margin-top: 10px; font-size: 0.9rem; color: #666;">선택된 번호: 0/6</div></div>';
+  numbersHtml += `
+      </div>
+      <div id="selectedCount" style="text-align: center; margin-top: 20px; font-size: 1.1rem; color: #ff6b6b; font-weight: bold;">선택된 번호: 0/6</div>
+    </div>
+  `;
   
   document.getElementById('numberSelection').innerHTML = numbersHtml;
 }
@@ -125,10 +162,12 @@ function selectNumber(num) {
     selectedNumbers = selectedNumbers.filter(n => n !== num);
     button.style.background = 'white';
     button.style.color = 'black';
+    button.style.borderColor = '#ddd';
   } else if (selectedNumbers.length < 6) {
     selectedNumbers.push(num);
-    button.style.background = '#667eea';
+    button.style.background = '#ff6b6b';
     button.style.color = 'white';
+    button.style.borderColor = '#ff6b6b';
   }
   
   document.getElementById('selectedCount').textContent = `선택된 번호: ${selectedNumbers.length}/6`;
@@ -151,16 +190,18 @@ function buyLotto() {
   myNumbers = [...selectedNumbers].sort((a, b) => a - b);
   
   document.getElementById('myLotto').innerHTML = `
-    <div style="padding: 15px; background: #e8f5e8; border-radius: 10px; border-left: 4px solid #28a745;">
-      <strong>🎫 구매한 로또</strong><br>
-      <div style="margin: 10px 0; font-size: 1.2rem;">
-        ${myNumbers.map(num => `<span style="background: #28a745; color: white; padding: 5px 10px; margin: 2px; border-radius: 50%; display: inline-block; width: 30px; height: 30px; line-height: 20px; font-size: 0.9rem;">${num}</span>`).join('')}
+    <div style="padding: 20px; background: #d4edda; border-radius: 15px; border-left: 5px solid #28a745; margin-bottom: 20px;">
+      <h3 style="color: #28a745; margin-bottom: 15px; text-align: center;">🎫 구매한 로또</h3>
+      <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+        ${myNumbers.map(num => `<span style="background: #28a745; color: white; padding: 10px; margin: 3px; border-radius: 50%; display: inline-block; width: 45px; height: 45px; line-height: 25px; font-size: 1.1rem; font-weight: bold; text-align: center;">${num}</span>`).join('')}
       </div>
     </div>
   `;
   
   document.getElementById('checkResult').innerHTML = `
-    <button onclick="checkWinning()" style="background: #dc3545; color: white; border: none; padding: 12px 25px; border-radius: 20px; cursor: pointer; font-size: 1rem;">당첨번호 확인하기</button>
+    <div style="text-align: center;">
+      <button onclick="checkWinning()" style="background: #dc3545; color: white; border: none; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-size: 1.1rem;">🎯 당첨번호 확인하기</button>
+    </div>
   `;
 }
 
@@ -206,20 +247,23 @@ function checkWinning() {
     prize = '5등 당첨! 🎀';
     prizeColor = '#1e90ff';
   } else {
-    prize = '당첨되지 않았습니다 😢';
+    prize = '낙첨 😢';
     prizeColor = '#999';
   }
   
   document.getElementById('checkResult').innerHTML = `
-    <div style="padding: 20px; background: #fff3cd; border-radius: 10px; border-left: 4px solid #ffc107; margin-top: 15px;">
-      <strong>🎯 당첨번호 발표</strong><br>
-      <div style="margin: 15px 0; font-size: 1.2rem;">
-        ${winningNumbers.map(num => `<span style="background: #ffc107; color: black; padding: 5px 10px; margin: 2px; border-radius: 50%; display: inline-block; width: 30px; height: 30px; line-height: 20px; font-size: 0.9rem; font-weight: bold;">${num}</span>`).join('')}
-        <span style="margin: 0 10px; font-size: 1rem;">+</span>
-        <span style="background: #dc3545; color: white; padding: 5px 10px; border-radius: 50%; display: inline-block; width: 30px; height: 30px; line-height: 20px; font-size: 0.9rem;">${bonusNumber}</span>
+    <div style="padding: 25px; background: #fff3cd; border-radius: 15px; border-left: 5px solid #ffc107; margin-top: 20px;">
+      <h3 style="color: #ffc107; margin-bottom: 20px; text-align: center;">🎯 당첨번호 발표</h3>
+      <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+        ${winningNumbers.map(num => `<span style="background: #ffc107; color: black; padding: 10px; border-radius: 50%; display: inline-block; width: 45px; height: 45px; line-height: 25px; font-size: 1.1rem; font-weight: bold; text-align: center;">${num}</span>`).join('')}
+        <span style="font-size: 1.5rem; margin: 0 10px;">+</span>
+        <span style="background: #dc3545; color: white; padding: 10px; border-radius: 50%; display: inline-block; width: 45px; height: 45px; line-height: 25px; font-size: 1.1rem; font-weight: bold; text-align: center;">${bonusNumber}</span>
       </div>
-      <div style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">맞은 번호: ${matchCount}개 ${bonusMatch ? '+ 보너스' : ''}</div>
-      <div style="font-size: 1.3rem; font-weight: bold; color: ${prizeColor};">${prize}</div>
+      <div style="text-align: center; font-size: 1rem; color: #666; margin-bottom: 15px;">맞은 번호: ${matchCount}개 ${bonusMatch ? '+ 보너스' : ''}</div>
+      <div style="text-align: center; font-size: 1.5rem; font-weight: bold; color: ${prizeColor};">${prize}</div>
+      <div style="text-align: center; margin-top: 20px;">
+        <button onclick="buyLotto()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">다시 구매하기</button>
+      </div>
     </div>
   `;
 }
@@ -237,7 +281,10 @@ function updateVisitorCount() {
   }
   
   localStorage.setItem('visitorCount', visitorCount);
-  document.getElementById('visitorCount').textContent = visitorCount;
+  const countElement = document.getElementById('visitorCount');
+  if (countElement) {
+    countElement.textContent = visitorCount;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -4,22 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memory</title>
-  <link rel="stylesheet" href="style.css?v=20250911-1">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="header">
     <h1>Memory</h1>
   </div>
   <div class="container">
-    <div class="menu">
-      <button onclick="showFortune()">오늘의 운세</button>
-      <button onclick="showLotto()">Lotto</button>
+    <div id="mainMenu" class="main-menu">
+      <div class="menu-grid">
+        <button class="fortune-btn" onclick="showFortune()">
+          <div class="btn-content">
+            <span class="btn-icon">🔮</span>
+            <span class="btn-text">오늘의 운세</span>
+          </div>
+        </button>
+        <button class="lotto-btn" onclick="showLotto()">
+          <div class="btn-content">
+            <span class="btn-icon">🎰</span>
+            <span class="btn-text">Lotto</span>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div id="backBtn" class="back-button" style="display: none;">
+      <button onclick="goBack()">← 뒤로 가기</button>
     </div>
     <div id="result" class="result-box"></div>
   </div>
   <div class="visitor-counter">
     <span>오늘 방문자: <span id="visitorCount">0</span>명</span>
   </div>
-  <script src="script.js?v=20250911-1"></script>
+  <script src="script.js"></script>
 </body>
 </html>
