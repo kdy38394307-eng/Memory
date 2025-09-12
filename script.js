@@ -125,8 +125,9 @@ function showLotto() {
   const currentHour = now.getHours();
   const lottoKey = `${now.toDateString()}-${currentHour}`;
   const purchasedLotto = localStorage.getItem(`purchasedLotto-${lottoKey}`);
+  const hasPurchased = localStorage.getItem(`hasPurchased-${lottoKey}`) === 'true';
   
-  if (purchasedLotto) {
+  if (purchasedLotto && hasPurchased) {
     // 이미 구매한 경우 카운트다운만 표시
     const myNumbers = JSON.parse(purchasedLotto);
     resultBox.innerHTML = `
@@ -175,6 +176,17 @@ function showLotto() {
 }
 
 function setAutoMode() {
+  // 구매 여부 확인
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  const hasPurchased = localStorage.getItem(`hasPurchased-${lottoKey}`) === 'true';
+  
+  if (hasPurchased) {
+    alert('이번 시간대에 이미 로또를 구매하셨습니다!');
+    return;
+  }
+  
   isAutoMode = true;
   selectedNumbers = [];
   document.getElementById('autoBtn').style.background = '#ff6b6b';
@@ -191,6 +203,17 @@ function setAutoMode() {
 }
 
 function setManualMode() {
+  // 구매 여부 확인
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  const hasPurchased = localStorage.getItem(`hasPurchased-${lottoKey}`) === 'true';
+  
+  if (hasPurchased) {
+    alert('이번 시간대에 이미 로또를 구매하셨습니다!');
+    return;
+  }
+  
   isAutoMode = false;
   selectedNumbers = [];
   document.getElementById('autoBtn').style.background = '#ccc';
@@ -199,9 +222,9 @@ function setManualMode() {
   document.getElementById('manualBtn').style.color = 'white';
   
   let numbersHtml = `
-    <div style="padding: 30px; background: #fff3cd; border-radius: 15px; min-height: 300px;">
+    <div style="padding: 30px; background: #fff3cd; border-radius: 15px; min-height: 350px; width: 100%; max-width: 750px; margin: 0 auto;">
       <p style="text-align: center; font-size: 1.1rem; margin-bottom: 25px;">✋ 번호를 선택해주세요 (6개)</p>
-      <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 10px; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 12px; max-width: 650px; margin: 0 auto; padding: 25px;">
   `;
   
   for (let i = 1; i <= 45; i++) {
@@ -296,6 +319,17 @@ function updateCountdown() {
 let countdownInterval;
 
 function buyLotto() {
+  // 구매 여부 재확인
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  const hasPurchased = localStorage.getItem(`hasPurchased-${lottoKey}`) === 'true';
+  
+  if (hasPurchased) {
+    alert('이번 시간대에 이미 로또를 구매하셨습니다!');
+    return;
+  }
+  
   if (isAutoMode) {
     selectedNumbers = [];
     while (selectedNumbers.length < 6) {
@@ -311,11 +345,12 @@ function buyLotto() {
   
   myNumbers = [...selectedNumbers].sort((a, b) => a - b);
   
-  // 구매한 로또 저장
+  // 구매한 로또 저장 및 구매 상태 표시
   const now = new Date();
   const currentHour = now.getHours();
   const lottoKey = `${now.toDateString()}-${currentHour}`;
   localStorage.setItem(`purchasedLotto-${lottoKey}`, JSON.stringify(myNumbers));
+  localStorage.setItem(`hasPurchased-${lottoKey}`, 'true');
   
   // 모든 버튼 비활성화
   const buyButton = document.querySelector('button[onclick="buyLotto()"]');
