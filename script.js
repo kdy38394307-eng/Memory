@@ -67,6 +67,10 @@ function showMainMenu() {
 
 function goBack() {
   showMainMenu();
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
   const resultBox = document.getElementById('result');
   resultBox.innerHTML = '원하는 메뉴를 선택해주세요!';
   resultBox.className = 'result-box empty';
@@ -198,11 +202,13 @@ function selectNumber(num) {
 }
 
 function getTodaysLotto() {
-  const today = new Date().toDateString();
-  const savedDate = localStorage.getItem('lottoDate');
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  const savedKey = localStorage.getItem('lottoKey');
   
-  if (savedDate !== today) {
-    // 새로운 날이면 새 당첨번호 생성
+  if (savedKey !== lottoKey) {
+    // 새로운 시간대면 새 당첨번호 생성
     const winningNumbers = [];
     while (winningNumbers.length < 6) {
       const num = Math.floor(Math.random() * 45) + 1;
@@ -219,16 +225,39 @@ function getTodaysLotto() {
     
     localStorage.setItem('todaysLottoNumbers', JSON.stringify(winningNumbers));
     localStorage.setItem('todaysLottoBonus', bonusNumber.toString());
-    localStorage.setItem('lottoDate', today);
+    localStorage.setItem('lottoKey', lottoKey);
+    localStorage.setItem('lottoTimestamp', now.getTime().toString());
     
     return { winningNumbers, bonusNumber };
   } else {
-    // 같은 날이면 저장된 당첨번호 반환
+    // 같은 시간대면 저장된 당첨번호 반환
     const winningNumbers = JSON.parse(localStorage.getItem('todaysLottoNumbers') || '[1,2,3,4,5,6]');
     const bonusNumber = parseInt(localStorage.getItem('todaysLottoBonus') || '7');
     return { winningNumbers, bonusNumber };
   }
 }
+
+function getTimeUntilNextLotto() {
+  const now = new Date();
+  const nextHour = new Date(now);
+  nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+  
+  const diff = nextHour.getTime() - now.getTime();
+  const minutes = Math.floor(diff / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  
+  return { minutes, seconds };
+}
+
+function updateCountdown() {
+  const countdownElement = document.getElementById('lottoCountdown');
+  if (countdownElement) {
+    const { minutes, seconds } = getTimeUntilNextLotto();
+    countdownElement.textContent = `다음 추첨까지: ${minutes}분 ${seconds}초`;
+  }
+}
+
+let countdownInterval;
 
 function buyLotto() {
   if (isAutoMode) {
@@ -269,9 +298,11 @@ function checkWinning() {
   }
   
   const { winningNumbers, bonusNumber } = getTodaysLotto();
-  const today = new Date().toDateString();
-  const savedDate = localStorage.getItem('lottoDate');
-  const isNewLotto = savedDate === today;
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  const savedKey = localStorage.getItem('lottoKey');
+  const isNewLotto = savedKey === lottoKey;
   
   const matchCount = myNumbers.filter(num => winningNumbers.includes(num)).length;
   const bonusMatch = myNumbers.includes(bonusNumber);
@@ -302,7 +333,7 @@ function checkWinning() {
   document.getElementById('checkResult').innerHTML = `
     <div style="padding: 25px; background: #fff3cd; border-radius: 15px; border-left: 5px solid #ffc107; margin-top: 20px;">
       <h3 style="color: #ffc107; margin-bottom: 15px; text-align: center;">🎯 당첨번호 발표</h3>
-      ${isNewLotto ? '<p style="color: #28a745; font-size: 0.9rem; text-align: center; margin-bottom: 15px;">✨ 오늘의 당첨번호가 결정되었습니다!</p>' : ''}
+      ${isNewLotto ? '<p style="color: #28a745; font-size: 0.9rem; text-align: center; margin-bottom: 15px;">✨ 이번 시간대 당첨번호가 결정되었습니다!</p>' : ''}
       <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
         ${winningNumbers.map(num => `<span style="background: #ffc107; color: black; padding: 10px; border-radius: 50%; display: inline-block; width: 45px; height: 45px; line-height: 25px; font-size: 1.1rem; font-weight: bold; text-align: center;">${num}</span>`).join('')}
         <span style="font-size: 1.5rem; margin: 0 10px;">+</span>
@@ -310,15 +341,18 @@ function checkWinning() {
       </div>
       <div style="text-align: center; font-size: 1rem; color: #666; margin-bottom: 15px;">맞은 번호: ${matchCount}개 ${bonusMatch ? '+ 보너스' : ''}</div>
       <div style="text-align: center; font-size: 1.5rem; font-weight: bold; color: ${prizeColor}; margin-bottom: 15px;">${prize}</div>
-      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-        <p style="color: #666; font-size: 0.9rem; margin: 0; text-align: center;">📅 오늘의 당첨번호는 하루에 한 번만 결정됩니다.</p>
-        <p style="color: #666; font-size: 0.9rem; margin: 5px 0 0 0; text-align: center;">내일 새로운 당첨번호를 확인해보세요!</p>
-      </div>
-      <div style="text-align: center;">
-        <button onclick="buyLotto()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">다시 구매하기</button>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+        <p style="color: #666; font-size: 0.9rem; margin: 0; text-align: center;">⏰ 당첨번호는 1시간마다 새로 결정됩니다.</p>
+        <p id="lottoCountdown" style="color: #ff6b6b; font-size: 1rem; margin: 10px 0; text-align: center; font-weight: bold;">다음 추첨까지: 계산 중...</p>
+        <p style="color: #28a745; font-size: 0.9rem; margin: 10px 0 0 0; text-align: center; font-weight: bold;">← 뒤로가기 버튼을 눌러 메인 메뉴로 돌아가세요</p>
       </div>
     </div>
   `;
+  
+  // 카운트다운 시작
+  if (countdownInterval) clearInterval(countdownInterval);
+  updateCountdown();
+  countdownInterval = setInterval(updateCountdown, 1000);
 }
 
 function updateVisitorCount() {
