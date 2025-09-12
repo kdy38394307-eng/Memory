@@ -1,35 +1,81 @@
-const advices = [
-  "노력한다고 다 성공하는 건 아니다. 운도 중요하다.",
-  "어른이 되어도 인생이 명확해지지 않는다. 그냥 책임만 늘어난다.",
-  "대부분의 사람들은 당신에게 관심이 없다. 그들도 자기 일로 바쁘다.",
-  "완벽한 직장은 없다. 어디든 스트레스는 있다.",
-  "돈이 전부는 아니지만, 돈 없으면 대부분의 문제가 해결되지 않는다.",
-  "좋아하는 일을 직업으로 만들면 좋아하지 않게 될 수도 있다.",
-  "인생은 공평하지 않다. 그냥 받아들이고 최선을 다하라.",
-  "다른 사람의 SNS를 보며 비교하지 마라. 그건 하이라이트만 보는 거다.",
-  "어릴 때 꿈꾸던 일을 못 하고 있어도 괜찮다. 현실적인 선택이다.",
-  "열심히 일해도 승진이 안 될 수 있다. 정치도 중요하다.",
-  "친구들이 결혼하고 아이를 가지면 만날 시간이 줄어든다.",
-  "새해 계획의 90%는 2월에 포기된다. 그래도 세우는 게 낫다.",
-  "직장에서 인정받으려면 실력보다 인간관계가 더 중요하다.",
-  "운동을 시작하면 처음 한 달이 가장 힘들다. 그 다음도 힘들다.",
-  "좋은 사람이라고 좋은 일만 생기는 건 아니다. 세상은 복잡하다.",
-  "다이어트는 내일부터 시작하겠다고 말하는 순간 실패한다.",
-  "어른이 되면 시간이 빨리 간다. 이건 착각이 아니다.",
-  "완벽한 타이밍은 없다. 그냥 지금 하든지 나중에 하든지 둘 중 하나다.",
-  "사람들은 변하지 않는다. 그냥 받아들이거나 떠나라.",
-  "일과 삶의 균형은 이상이다. 현실은 일이 삶을 집어삼킨다.",
-  "스마트폰을 보는 시간을 줄이려고 해도 잘 안 된다. 중독이다.",
-  "다른 사람의 성공을 보며 질투하는 시간에 자기 일을 하라.",
-  "건강이 없으면 아무것도 소용없다. 그래도 밤새워 일한다.",
-  "인생에 정답은 없다. 그냥 선택과 그 결과가 있을 뿐이다.",
-  "나이가 들수록 새로운 도전이 두려워진다. 이건 정상이다."
+const fortunes = [
+  "오늘 치킨 먹으면 대박남 🍗",
+  "폰 배터리 100%로 시작하는 날 ⚡",
+  "오늘은 와이파이가 빵빵할 예정 📶",
+  "택배 오늘 올 확률 99% 📦",
+  "버스 딱 맞춰 올 운세 🚌",
+  "오늘 셀카 잘 나옴 주의 🤳",
+  "아이스크림 공짜로 하나 더 받을 운 🍦",
+  "엘베 바로 와서 기분 좋은 날 🛗",
+  "오늘은 신호등이 다 초록불 🚦",
+  "카페에서 자리 바로 잡는 날 ☕",
+  "오늘 점심메뉴 고민 1초컷 🍽️",
+  "폰 떨어뜨려도 안 깨지는 운세 📱",
+  "오늘은 머리가 말을 잘 들음 💇",
+  "지하철 앉아서 갈 확률 업 🚇",
+  "오늘 만보 저절로 채워짐 👟",
+  "편의점 1+1 행사 발견할 운 🏪",
+  "오늘은 모든 앱이 빨리 켜짐 📲",
+  "엄마가 용돈 줄 가능성 있음 💰",
+  "오늘 웃긴 밈 3개 이상 볼 예정 😂",
+  "에어컨 바람 독차지하는 날 ❄️",
+  "오늘은 모든 문이 자동문 🚪",
+  "길에서 강아지 3마리 이상 만남 🐕",
+  "오늘 배달 30분 안에 옴 🛵",
+  "화장실 휴지 떨어지지 않는 날 🧻",
+  "오늘은 모든 비밀번호 한 번에 맞춤 🔐",
+  "친구가 먼저 연락할 확률 높음 📞",
+  "오늘 좋아하는 노래 라디오에서 나옴 🎵",
+  "마트에서 시식 많이 하는 날 🛒",
+  "오늘은 모든 신발끈이 안 풀림 👟",
+  "엘리베이터에서 혼자 타는 운세 🛗",
+  "오늘 좋아하는 유튜버 영상 업로드 📺",
+  "길에서 돈 주울 가능성 0.1% 💸",
+  "오늘은 모든 USB 한 번에 꽂힘 💾",
+  "카페 와이파이 비번 123456 확률 업 📶",
+  "오늘 좋아하는 과자 할인하는 날 🍪",
+  "지하철에서 핸드폰 충전 성공 🔋",
+  "오늘은 모든 자판기가 거스름돈 줌 🏧",
+  "친구가 밥 사준다고 할 운세 🍚",
+  "오늘 좋아하는 아이돌 인스타 업뎃 📸",
+  "편의점에서 따뜻한 도시락 발견 🍱",
+  "오늘은 모든 앱 업데이트 안 해도 됨 📱",
+  "길에서 고양이가 먼저 다가옴 🐱",
+  "오늘 좋아하는 드라마 재방송 나옴 📺",
+  "마스크 끈 안 끊어지는 날 😷",
+  "오늘은 모든 계산이 딱 떨어짐 🧮",
+  "친구가 먼저 사과할 확률 높음 🍎",
+  "오늘 좋아하는 음식 배달비 무료 🚚",
+  "길에서 아는 사람 안 만나는 운세 👻",
+  "오늘은 모든 문자가 바로 읽힘 💬",
+  "잠깐 누워있다가 12시간 잘 운세 😴"
 ];
 
-function showAdvice() {
-  const randomAdvice = advices[Math.floor(Math.random() * advices.length)];
+function showFortune() {
+  const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
   const resultBox = document.getElementById('result');
-  resultBox.innerHTML = `<strong>😑 현실적인 조언</strong><br><br>${randomAdvice}`;
+  resultBox.innerHTML = `<strong>🔮 오늘의 운세</strong><br><br><div style="font-size: 1.2rem; line-height: 1.5;">${randomFortune}</div>`;
+  resultBox.className = 'result-box';
+}
+
+function showLotto() {
+  const numbers = [];
+  while (numbers.length < 6) {
+    const num = Math.floor(Math.random() * 45) + 1;
+    if (!numbers.includes(num)) {
+      numbers.push(num);
+    }
+  }
+  numbers.sort((a, b) => a - b);
+  
+  const bonus = Math.floor(Math.random() * 45) + 1;
+  
+  const resultBox = document.getElementById('result');
+  resultBox.innerHTML = `<strong>🎰 로또번호 추첨</strong><br><br>
+    <div style="font-size: 1.3rem; margin: 10px 0;">
+      ${numbers.map(num => `<span style="background: #667eea; color: white; padding: 5px 10px; margin: 2px; border-radius: 50%; display: inline-block; width: 35px; height: 35px; line-height: 25px;">${num}</span>`).join('')}
+    </div>
+    <div style="margin-top: 15px; font-size: 1rem;">보너스: <span style="background: #ff6b6b; color: white; padding: 5px 10px; border-radius: 50%; display: inline-block; width: 35px; height: 35px; line-height: 25px;">${bonus}</span></div>`;
   resultBox.className = 'result-box';
 }
 
@@ -53,7 +99,7 @@ function updateVisitorCount() {
 // 페이지 로드 시 초기 메시지
 document.addEventListener('DOMContentLoaded', function() {
   const resultBox = document.getElementById('result');
-  resultBox.innerHTML = '버튼을 클릭해서 현실적인 조언을 확인해보세요!';
+  resultBox.innerHTML = '원하는 메뉴를 선택해주세요!';
   resultBox.className = 'result-box empty';
   
   updateVisitorCount();
