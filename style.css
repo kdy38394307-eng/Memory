@@ -144,6 +144,19 @@ button:hover {
   transform: translateY(-2px);
 }
 
+button:disabled {
+  background: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+button:disabled:hover {
+  background: #ccc !important;
+  transform: none !important;
+}
+
 .result-box {
   background: #f8f9fa;
   padding: 1.5rem;

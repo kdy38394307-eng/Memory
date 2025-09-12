@@ -275,12 +275,24 @@ function buyLotto() {
   
   myNumbers = [...selectedNumbers].sort((a, b) => a - b);
   
+  // 모든 버튼 비활성화
+  const buyButton = document.querySelector('button[onclick="buyLotto()"]');
+  const autoBtn = document.getElementById('autoBtn');
+  const manualBtn = document.getElementById('manualBtn');
+  const numberButtons = document.querySelectorAll('button[onclick^="selectNumber"]');
+  
+  if (buyButton) buyButton.disabled = true;
+  if (autoBtn) autoBtn.disabled = true;
+  if (manualBtn) manualBtn.disabled = true;
+  numberButtons.forEach(btn => btn.disabled = true);
+  
   document.getElementById('myLotto').innerHTML = `
     <div style="padding: 20px; background: #d4edda; border-radius: 15px; border-left: 5px solid #28a745; margin-bottom: 20px;">
       <h3 style="color: #28a745; margin-bottom: 15px; text-align: center;">🎫 구매한 로또</h3>
       <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
         ${myNumbers.map(num => `<span style="background: #28a745; color: white; padding: 10px; margin: 3px; border-radius: 50%; display: inline-block; width: 45px; height: 45px; line-height: 25px; font-size: 1.1rem; font-weight: bold; text-align: center;">${num}</span>`).join('')}
       </div>
+      <p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: 15px;">ℹ️ 로또 구매가 완료되었습니다. 다시 구매하려면 뒤로가기 후 새로 시작해주세요.</p>
     </div>
   `;
   
@@ -348,6 +360,10 @@ function checkWinning() {
       </div>
     </div>
   `;
+  
+  // 당첨번호 확인 버튼 비활성화
+  const checkButton = document.querySelector('button[onclick="checkWinning()"]');
+  if (checkButton) checkButton.disabled = true;
   
   // 카운트다운 시작
   if (countdownInterval) clearInterval(countdownInterval);
