@@ -72,17 +72,41 @@ function goBack() {
   resultBox.className = 'result-box empty';
 }
 
+function getTodaysFortune() {
+  const today = new Date().toDateString();
+  const savedDate = localStorage.getItem('fortuneDate');
+  
+  if (savedDate !== today) {
+    // 새로운 날이면 새 운세 생성
+    const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    localStorage.setItem('todaysFortune', randomFortune);
+    localStorage.setItem('fortuneDate', today);
+    return randomFortune;
+  } else {
+    // 같은 날이면 저장된 운세 반환
+    return localStorage.getItem('todaysFortune') || fortunes[0];
+  }
+}
+
 function showFortune() {
   hideMainMenu();
-  const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+  const todaysFortune = getTodaysFortune();
+  const today = new Date().toDateString();
+  const savedDate = localStorage.getItem('fortuneDate');
+  const isNewFortune = savedDate === today;
+  
   const resultBox = document.getElementById('result');
   resultBox.innerHTML = `
     <div style="text-align: center; padding: 20px;">
-      <h2 style="color: #667eea; margin-bottom: 30px;">🔮 오늘의 운세</h2>
-      <div style="font-size: 1.4rem; line-height: 1.8; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">
-        ${randomFortune}
+      <h2 style="color: #667eea; margin-bottom: 20px;">🔮 오늘의 운세</h2>
+      ${isNewFortune ? '<p style="color: #28a745; font-size: 0.9rem; margin-bottom: 20px;">✨ 오늘의 운세가 준비되었습니다!</p>' : ''}
+      <div style="font-size: 1.4rem; line-height: 1.8; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; margin-bottom: 30px;">
+        ${todaysFortune}
       </div>
-      <button onclick="showFortune()" style="margin-top: 30px; background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">다른 운세 보기</button>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 20px;">
+        <p style="color: #666; font-size: 0.9rem; margin: 0;">📅 오늘의 운세는 하루에 한 번만 새로 생성됩니다.</p>
+        <p style="color: #666; font-size: 0.9rem; margin: 5px 0 0 0;">내일 새로운 운세를 만나보세요!</p>
+      </div>
     </div>
   `;
   resultBox.className = 'result-box';
@@ -173,6 +197,39 @@ function selectNumber(num) {
   document.getElementById('selectedCount').textContent = `선택된 번호: ${selectedNumbers.length}/6`;
 }
 
+function getTodaysLotto() {
+  const today = new Date().toDateString();
+  const savedDate = localStorage.getItem('lottoDate');
+  
+  if (savedDate !== today) {
+    // 새로운 날이면 새 당첨번호 생성
+    const winningNumbers = [];
+    while (winningNumbers.length < 6) {
+      const num = Math.floor(Math.random() * 45) + 1;
+      if (!winningNumbers.includes(num)) {
+        winningNumbers.push(num);
+      }
+    }
+    winningNumbers.sort((a, b) => a - b);
+    
+    let bonusNumber;
+    do {
+      bonusNumber = Math.floor(Math.random() * 45) + 1;
+    } while (winningNumbers.includes(bonusNumber));
+    
+    localStorage.setItem('todaysLottoNumbers', JSON.stringify(winningNumbers));
+    localStorage.setItem('todaysLottoBonus', bonusNumber.toString());
+    localStorage.setItem('lottoDate', today);
+    
+    return { winningNumbers, bonusNumber };
+  } else {
+    // 같은 날이면 저장된 당첨번호 반환
+    const winningNumbers = JSON.parse(localStorage.getItem('todaysLottoNumbers') || '[1,2,3,4,5,6]');
+    const bonusNumber = parseInt(localStorage.getItem('todaysLottoBonus') || '7');
+    return { winningNumbers, bonusNumber };
+  }
+}
+
 function buyLotto() {
   if (isAutoMode) {
     selectedNumbers = [];
@@ -211,19 +268,10 @@ function checkWinning() {
     return;
   }
   
-  const winningNumbers = [];
-  while (winningNumbers.length < 6) {
-    const num = Math.floor(Math.random() * 45) + 1;
-    if (!winningNumbers.includes(num)) {
-      winningNumbers.push(num);
-    }
-  }
-  winningNumbers.sort((a, b) => a - b);
-  
-  let bonusNumber;
-  do {
-    bonusNumber = Math.floor(Math.random() * 45) + 1;
-  } while (winningNumbers.includes(bonusNumber));
+  const { winningNumbers, bonusNumber } = getTodaysLotto();
+  const today = new Date().toDateString();
+  const savedDate = localStorage.getItem('lottoDate');
+  const isNewLotto = savedDate === today;
   
   const matchCount = myNumbers.filter(num => winningNumbers.includes(num)).length;
   const bonusMatch = myNumbers.includes(bonusNumber);
@@ -253,15 +301,20 @@ function checkWinning() {
   
   document.getElementById('checkResult').innerHTML = `
     <div style="padding: 25px; background: #fff3cd; border-radius: 15px; border-left: 5px solid #ffc107; margin-top: 20px;">
-      <h3 style="color: #ffc107; margin-bottom: 20px; text-align: center;">🎯 당첨번호 발표</h3>
+      <h3 style="color: #ffc107; margin-bottom: 15px; text-align: center;">🎯 당첨번호 발표</h3>
+      ${isNewLotto ? '<p style="color: #28a745; font-size: 0.9rem; text-align: center; margin-bottom: 15px;">✨ 오늘의 당첨번호가 결정되었습니다!</p>' : ''}
       <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
         ${winningNumbers.map(num => `<span style="background: #ffc107; color: black; padding: 10px; border-radius: 50%; display: inline-block; width: 45px; height: 45px; line-height: 25px; font-size: 1.1rem; font-weight: bold; text-align: center;">${num}</span>`).join('')}
         <span style="font-size: 1.5rem; margin: 0 10px;">+</span>
         <span style="background: #dc3545; color: white; padding: 10px; border-radius: 50%; display: inline-block; width: 45px; height: 45px; line-height: 25px; font-size: 1.1rem; font-weight: bold; text-align: center;">${bonusNumber}</span>
       </div>
       <div style="text-align: center; font-size: 1rem; color: #666; margin-bottom: 15px;">맞은 번호: ${matchCount}개 ${bonusMatch ? '+ 보너스' : ''}</div>
-      <div style="text-align: center; font-size: 1.5rem; font-weight: bold; color: ${prizeColor};">${prize}</div>
-      <div style="text-align: center; margin-top: 20px;">
+      <div style="text-align: center; font-size: 1.5rem; font-weight: bold; color: ${prizeColor}; margin-bottom: 15px;">${prize}</div>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+        <p style="color: #666; font-size: 0.9rem; margin: 0; text-align: center;">📅 오늘의 당첨번호는 하루에 한 번만 결정됩니다.</p>
+        <p style="color: #666; font-size: 0.9rem; margin: 5px 0 0 0; text-align: center;">내일 새로운 당첨번호를 확인해보세요!</p>
+      </div>
+      <div style="text-align: center;">
         <button onclick="buyLotto()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">다시 구매하기</button>
       </div>
     </div>
