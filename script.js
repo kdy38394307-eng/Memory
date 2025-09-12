@@ -1,5 +1,4 @@
 const fortunes = [
-  const fortunes = [
   "오늘 치킨 먹으면 대박남 🍗",
   "폰 배터리 100%로 시작하는 날 ⚡",
   "오늘은 와이파이가 빵빵할 예정 📶",
@@ -52,16 +51,16 @@ const fortunes = [
   "잠깐 누워있다가 12시간 잘 운세 😴"
 ];
 
+let selectedNumbers = [];
+let isAutoMode = true;
+let myNumbers = [];
+
 function showFortune() {
   const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
   const resultBox = document.getElementById('result');
   resultBox.innerHTML = `<strong>🔮 오늘의 운세</strong><br><br><div style="font-size: 1.2rem; line-height: 1.5;">${randomFortune}</div>`;
   resultBox.className = 'result-box';
 }
-
-let selectedNumbers = [];
-let isAutoMode = true;
-let myNumbers = [];
 
 function showLotto() {
   const resultBox = document.getElementById('result');
@@ -171,7 +170,6 @@ function checkWinning() {
     return;
   }
   
-  // 당첨번호 생성
   const winningNumbers = [];
   while (winningNumbers.length < 6) {
     const num = Math.floor(Math.random() * 45) + 1;
@@ -186,7 +184,6 @@ function checkWinning() {
     bonusNumber = Math.floor(Math.random() * 45) + 1;
   } while (winningNumbers.includes(bonusNumber));
   
-  // 당첨 확인
   const matchCount = myNumbers.filter(num => winningNumbers.includes(num)).length;
   const bonusMatch = myNumbers.includes(bonusNumber);
   
@@ -227,7 +224,6 @@ function checkWinning() {
   `;
 }
 
-// 방문자 수 관리
 function updateVisitorCount() {
   const today = new Date().toDateString();
   const lastVisit = localStorage.getItem('lastVisit');
@@ -244,7 +240,6 @@ function updateVisitorCount() {
   document.getElementById('visitorCount').textContent = visitorCount;
 }
 
-// 페이지 로드 시 초기 메시지
 document.addEventListener('DOMContentLoaded', function() {
   const resultBox = document.getElementById('result');
   resultBox.innerHTML = '원하는 메뉴를 선택해주세요!';
