@@ -119,23 +119,59 @@ function showFortune() {
 function showLotto() {
   hideMainMenu();
   const resultBox = document.getElementById('result');
-  resultBox.innerHTML = `
-    <div style="padding: 20px;">
-      <h2 style="color: #ff6b6b; margin-bottom: 20px; text-align: center;">🎰 로또 구매하기</h2>
-      <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 25px;">
-        <button onclick="setAutoMode()" id="autoBtn" style="background: #ff6b6b; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">자동</button>
-        <button onclick="setManualMode()" id="manualBtn" style="background: #ccc; color: #666; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">수동</button>
+  
+  // 이미 구매한 로또가 있는지 확인
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  const purchasedLotto = localStorage.getItem(`purchasedLotto-${lottoKey}`);
+  
+  if (purchasedLotto) {
+    // 이미 구매한 경우 카운트다운만 표시
+    const myNumbers = JSON.parse(purchasedLotto);
+    resultBox.innerHTML = `
+      <div style="padding: 20px; text-align: center;">
+        <h2 style="color: #ff6b6b; margin-bottom: 20px;">🎰 로또 구매 완료</h2>
+        <div style="padding: 20px; background: #d4edda; border-radius: 15px; border-left: 5px solid #28a745; margin-bottom: 25px;">
+          <h3 style="color: #28a745; margin-bottom: 15px;">🎫 구매한 로또</h3>
+          <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+            ${myNumbers.map(num => `<span style="background: #28a745; color: white; padding: 10px; margin: 3px; border-radius: 50%; display: inline-block; width: 45px; height: 45px; line-height: 25px; font-size: 1.1rem; font-weight: bold; text-align: center;">${num}</span>`).join('')}
+          </div>
+        </div>
+        <div style="background: #fff3cd; padding: 20px; border-radius: 15px; border-left: 5px solid #ffc107;">
+          <h3 style="color: #ffc107; margin-bottom: 15px;">⏰ 다음 추첨 대기 중</h3>
+          <p style="color: #666; margin-bottom: 15px;">이번 시간대에 이미 로또를 구매하셨습니다.</p>
+          <p id="lottoCountdown" style="color: #ff6b6b; font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">다음 추첨까지: 계산 중...</p>
+          <button onclick="checkWinning()" style="background: #dc3545; color: white; border: none; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-size: 1.1rem;">🎯 당첨번호 확인하기</button>
+        </div>
       </div>
-      <div id="numberSelection" style="margin-bottom: 25px;"></div>
-      <div style="text-align: center; margin-bottom: 25px;">
-        <button onclick="buyLotto()" style="background: #28a745; color: white; border: none; padding: 15px 35px; border-radius: 25px; cursor: pointer; font-size: 1.2rem;">로또 구매하기</button>
+    `;
+    
+    // 카운트다운 시작
+    if (countdownInterval) clearInterval(countdownInterval);
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
+  } else {
+    // 아직 구매하지 않은 경우 정상 화면
+    resultBox.innerHTML = `
+      <div style="padding: 20px;">
+        <h2 style="color: #ff6b6b; margin-bottom: 20px; text-align: center;">🎰 로또 구매하기</h2>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 25px;">
+          <button onclick="setAutoMode()" id="autoBtn" style="background: #ff6b6b; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">자동</button>
+          <button onclick="setManualMode()" id="manualBtn" style="background: #ccc; color: #666; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">수동</button>
+        </div>
+        <div id="numberSelection" style="margin-bottom: 25px;"></div>
+        <div style="text-align: center; margin-bottom: 25px;">
+          <button onclick="buyLotto()" style="background: #28a745; color: white; border: none; padding: 15px 35px; border-radius: 25px; cursor: pointer; font-size: 1.2rem;">로또 구매하기</button>
+        </div>
+        <div id="myLotto"></div>
+        <div id="checkResult"></div>
       </div>
-      <div id="myLotto"></div>
-      <div id="checkResult"></div>
-    </div>
-  `;
+    `;
+    setAutoMode();
+  }
+  
   resultBox.className = 'result-box';
-  setAutoMode();
 }
 
 function setAutoMode() {
@@ -163,9 +199,9 @@ function setManualMode() {
   document.getElementById('manualBtn').style.color = 'white';
   
   let numbersHtml = `
-    <div style="padding: 25px; background: #fff3cd; border-radius: 15px;">
-      <p style="text-align: center; font-size: 1.1rem; margin-bottom: 20px;">✋ 번호를 선택해주세요 (6개)</p>
-      <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 8px; max-width: 500px; margin: 0 auto;">
+    <div style="padding: 30px; background: #fff3cd; border-radius: 15px; min-height: 300px;">
+      <p style="text-align: center; font-size: 1.1rem; margin-bottom: 25px;">✋ 번호를 선택해주세요 (6개)</p>
+      <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 10px; max-width: 600px; margin: 0 auto; padding: 20px;">
   `;
   
   for (let i = 1; i <= 45; i++) {
@@ -174,7 +210,7 @@ function setManualMode() {
   
   numbersHtml += `
       </div>
-      <div id="selectedCount" style="text-align: center; margin-top: 20px; font-size: 1.1rem; color: #ff6b6b; font-weight: bold;">선택된 번호: 0/6</div>
+      <div id="selectedCount" style="text-align: center; margin-top: 25px; font-size: 1.2rem; color: #ff6b6b; font-weight: bold;">선택된 번호: 0/6</div>
     </div>
   `;
   
@@ -274,6 +310,12 @@ function buyLotto() {
   }
   
   myNumbers = [...selectedNumbers].sort((a, b) => a - b);
+  
+  // 구매한 로또 저장
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  localStorage.setItem(`purchasedLotto-${lottoKey}`, JSON.stringify(myNumbers));
   
   // 모든 버튼 비활성화
   const buyButton = document.querySelector('button[onclick="buyLotto()"]');
