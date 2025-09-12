@@ -1,4 +1,5 @@
 const fortunes = [
+  const fortunes = [
   "오늘 치킨 먹으면 대박남 🍗",
   "폰 배터리 100%로 시작하는 날 ⚡",
   "오늘은 와이파이가 빵빵할 예정 📶",
@@ -89,12 +90,12 @@ function setAutoMode() {
   document.getElementById('manualBtn').style.background = '#ccc';
   document.getElementById('manualBtn').style.color = '#666';
   
-  document.getElementById('numberSelection').innerHTML = '
+  document.getElementById('numberSelection').innerHTML = `
     <div style="padding: 20px; background: #f8f9fa; border-radius: 10px; margin: 10px 0;">
       <p>자동 선택 모드입니다.</p>
       <p>번호가 자동으로 선택됩니다.</p>
     </div>
-  ';
+  `;
 }
 
 function setManualMode() {
