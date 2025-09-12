@@ -309,6 +309,29 @@ function getTodaysLotto() {
   const lottoKey = `${now.toDateString()}-${currentHour}`;
   const savedKey = localStorage.getItem('lottoKey');
   
+  if (savedKey !== lottoKconst fortunes = [
+  "오늘 치킨 먹으면 대박남 🍗",
+  "폰 배터리 100%로 시작하는 날 ⚡",
+  "오늘은 와이파이가 빵빵할 예정 📶",
+  "택배 오늘 올 확률 99% 📦",
+  "버스 딱 맞춰 올 운세 🚌",
+  "오늘 셀카 잘 나옴 주의 🤳",
+  "아이스크림 공짜로 하나 더 받을 운 🍦",
+  "엘베 바로 와서 기분 좋은 날 🛗",
+  "오늘은 신호등이 다 초록불 🚦",
+  "카페에서 자리 바로 잡는 날 ☕"
+];
+
+let selectedNumbers = [];
+let isAutoMode = true;
+let myNumbers = [];
+
+function getTodaysLotto() {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  const savedKey = localStorage.getItem('lottoKey');
+  
   if (savedKey !== lottoKey) {
     // 새로운 시간대면 새 당첨번호 생성
     const winningNumbers = [];
@@ -361,6 +384,146 @@ function updateCountdown() {
 
 let countdownInterval;
 
+function hideMainMenu() {
+  document.getElementById('mainMenu').style.display = 'none';
+  document.getElementById('backBtn').style.display = 'block';
+}
+
+function showMainMenu() {
+  document.getElementById('mainMenu').style.display = 'block';
+  document.getElementById('backBtn').style.display = 'none';
+}
+
+function goBack() {
+  showMainMenu();
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+  const resultBox = document.getElementById('result');
+  resultBox.innerHTML = '원하는 메뉴를 선택해주세요!';
+  resultBox.className = 'result-box empty';
+}
+
+function getTodaysFortune() {
+  const today = new Date().toDateString();
+  const savedDate = localStorage.getItem('fortuneDate');
+  
+  if (savedDate !== today) {
+    const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    localStorage.setItem('todaysFortune', randomFortune);
+    localStorage.setItem('fortuneDate', today);
+    return randomFortune;
+  } else {
+    return localStorage.getItem('todaysFortune') || fortunes[0];
+  }
+}
+
+function showFortune() {
+  hideMainMenu();
+  const todaysFortune = getTodaysFortune();
+  const today = new Date().toDateString();
+  const savedDate = localStorage.getItem('fortuneDate');
+  const isNewFortune = savedDate === today;
+  
+  const resultBox = document.getElementById('result');
+  resultBox.innerHTML = `
+    <div style="text-align: center; padding: 20px;">
+      <h2 style="color: #667eea; margin-bottom: 20px;">🔮 오늘의 운세</h2>
+      ${isNewFortune ? '<p style="color: #28a745; font-size: 0.9rem; margin-bottom: 20px;">✨ 오늘의 운세가 준비되었습니다!</p>' : ''}
+      <div style="font-size: 1.4rem; line-height: 1.8; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; margin-bottom: 30px;">
+        ${todaysFortune}
+      </div>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 20px;">
+        <p style="color: #666; font-size: 0.9rem; margin: 0;">📅 오늘의 운세는 하루에 한 번만 새로 생성됩니다.</p>
+        <p style="color: #666; font-size: 0.9rem; margin: 5px 0 0 0;">내일 새로운 운세를 만나보세요!</p>
+      </div>
+    </div>
+  `;
+  resultBox.className = 'result-box';
+}
+
+function showLotto() {
+  hideMainMenu();
+  const resultBox = document.getElementById('result');
+  
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  const purchasedLotto = localStorage.getItem(`purchasedLotto-${lottoKey}`);
+  const hasPurchased = localStorage.getItem(`hasPurchased-${lottoKey}`) === 'true';
+  
+  if (purchasedLotto && hasPurchased) {
+    const myNumbers = JSON.parse(purchasedLotto);
+    resultBox.innerHTML = `
+      <div style="padding: 20px; text-align: center;">
+        <h2 style="color: #ff6b6b; margin-bottom: 20px;">🎰 로또 구매 완료</h2>
+        <div style="padding: 20px; background: #d4edda; border-radius: 15px; border-left: 5px solid #28a745; margin-bottom: 25px;">
+          <h3 style="color: #28a745; margin-bottom: 15px;">🎫 구매한 로또</h3>
+          <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+            ${myNumbers.map(num => `<span style="background: #28a745; color: white; padding: 10px; margin: 3px; border-radius: 50%; display: inline-block; width: 45px; height: 45px; line-height: 25px; font-size: 1.1rem; font-weight: bold; text-align: center;">${num}</span>`).join('')}
+          </div>
+        </div>
+        <div style="background: #fff3cd; padding: 20px; border-radius: 15px; border-left: 5px solid #ffc107;">
+          <h3 style="color: #ffc107; margin-bottom: 15px;">⏰ 다음 추첨 대기 중</h3>
+          <p style="color: #666; margin-bottom: 15px;">이번 시간대에 이미 로또를 구매하셨습니다.</p>
+          <p id="lottoCountdown" style="color: #ff6b6b; font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">다음 추첨까지: 계산 중...</p>
+          <button onclick="checkWinning()" style="background: #dc3545; color: white; border: none; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-size: 1.1rem;">🎯 당첨번호 확인하기</button>
+        </div>
+      </div>
+    `;
+    
+    if (countdownInterval) clearInterval(countdownInterval);
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
+  } else {
+    resultBox.innerHTML = `
+      <div style="padding: 20px;">
+        <h2 style="color: #ff6b6b; margin-bottom: 20px; text-align: center;">🎰 로또 구매하기</h2>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 25px;">
+          <button onclick="setAutoMode()" id="autoBtn" style="background: #ff6b6b; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">자동</button>
+          <button onclick="setManualMode()" id="manualBtn" style="background: #ccc; color: #666; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">수동</button>
+        </div>
+        <div id="numberSelection" style="margin-bottom: 25px;"></div>
+        <div style="text-align: center; margin-bottom: 25px;">
+          <button onclick="buyLotto()" style="background: #28a745; color: white; border: none; padding: 15px 35px; border-radius: 25px; cursor: pointer; font-size: 1.2rem;">로또 구매하기</button>
+        </div>
+        <div id="myLotto"></div>
+        <div id="checkResult"></div>
+      </div>
+    `;
+    setAutoMode();
+  }
+  
+  resultBox.className = 'result-box';
+}
+
+function setAutoMode() {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  const hasPurchased = localStorage.getItem(`hasPurchased-${lottoKey}`) === 'true';
+  
+  if (hasPurchased) {
+    alert('이번 시간대에 이미 로또를 구매하셨습니다!');
+    return;
+  }
+  
+  isAutoMode = true;
+  selectedNumbers = [];
+  document.getElementById('autoBtn').style.background = '#ff6b6b';
+  document.getElementById('autoBtn').style.color = 'white';
+  document.getElementById('manualBtn').style.background = '#ccc';
+  document.getElementById('manualBtn').style.color = '#666';
+  
+  document.getElementById('numberSelection').innerHTML = `
+    <div style="padding: 25px; background: #fff3cd; border-radius: 15px; text-align: center;">
+      <p style="font-size: 1.1rem; margin-bottom: 10px;">🎲 자동 선택 모드</p>
+      <p style="color: #666;">번호가 자동으로 선택됩니다</p>
+    </div>
+  `;
+}
+
 function buyLotto() {
   // 구매 여부 재확인
   const now = new Date();
@@ -388,10 +551,7 @@ function buyLotto() {
   
   myNumbers = [...selectedNumbers].sort((a, b) => a - b);
   
-  // 구매한 로또 저장 및 구매 상태 표시
-  const now = new Date();
-  const currentHour = now.getHours();
-  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  // 구매한 로또 저장 및 구매 상태 표시 (중복 선언 제거)
   localStorage.setItem(`purchasedLotto-${lottoKey}`, JSON.stringify(myNumbers));
   localStorage.setItem(`hasPurchased-${lottoKey}`, 'true');
   
