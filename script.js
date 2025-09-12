@@ -214,30 +214,59 @@ function setManualMode() {
     return;
   }
   
+  showManualSelectionScreen();
+}
+
+function showManualSelectionScreen() {
   isAutoMode = false;
   selectedNumbers = [];
-  document.getElementById('autoBtn').style.background = '#ccc';
-  document.getElementById('autoBtn').style.color = '#666';
-  document.getElementById('manualBtn').style.background = '#ff6b6b';
-  document.getElementById('manualBtn').style.color = 'white';
   
-  let numbersHtml = `
-    <div style="padding: 30px; background: #fff3cd; border-radius: 15px; min-height: 350px; width: 100%; max-width: 750px; margin: 0 auto;">
-      <p style="text-align: center; font-size: 1.1rem; margin-bottom: 25px;">✋ 번호를 선택해주세요 (6개)</p>
-      <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 12px; max-width: 650px; margin: 0 auto; padding: 25px;">
-  `;
-  
-  for (let i = 1; i <= 45; i++) {
-    numbersHtml += `<button onclick="selectNumber(${i})" id="num${i}" style="width: 45px; height: 45px; border: 2px solid #ddd; background: white; border-radius: 50%; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.2s;">${i}</button>`;
-  }
-  
-  numbersHtml += `
+  const resultBox = document.getElementById('result');
+  resultBox.innerHTML = `
+    <div style="padding: 20px; min-height: 500px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <button onclick="backToLottoMenu()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 15px; cursor: pointer;">← 로또 메뉴로</button>
+        <h2 style="color: #ff6b6b; margin: 0;">🎲 수동 번호 선택</h2>
+        <div></div>
       </div>
-      <div id="selectedCount" style="text-align: center; margin-top: 25px; font-size: 1.2rem; color: #ff6b6b; font-weight: bold;">선택된 번호: 0/6</div>
+      
+      <div style="background: #fff3cd; border-radius: 20px; padding: 40px; margin-bottom: 30px;">
+        <p style="text-align: center; font-size: 1.3rem; margin-bottom: 30px; color: #333;">✋ 1~45 중에서 6개 번호를 선택해주세요</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 15px; max-width: 700px; margin: 0 auto; padding: 20px;">
+          ${Array.from({length: 45}, (_, i) => i + 1).map(num => 
+            `<button onclick="selectNumber(${num})" id="num${num}" 
+             style="width: 60px; height: 60px; border: 3px solid #ddd; background: white; border-radius: 50%; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+             ${num}
+             </button>`
+          ).join('')}
+        </div>
+        
+        <div id="selectedCount" style="text-align: center; margin-top: 30px; font-size: 1.4rem; color: #ff6b6b; font-weight: bold;">선택된 번호: 0/6</div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+          <button onclick="confirmManualSelection()" id="confirmBtn" style="background: #28a745; color: white; border: none; padding: 15px 40px; border-radius: 25px; cursor: pointer; font-size: 1.2rem; opacity: 0.5;" disabled>확인 및 구매</button>
+        </div>
+      </div>
     </div>
   `;
+}
+
+function backToLottoMenu() {
+  showLotto();
+}
+
+function confirmManualSelection() {
+  if (selectedNumbers.length !== 6) {
+    alert('번호를 6개 선택해주세요!');
+    return;
+  }
   
-  document.getElementById('numberSelection').innerHTML = numbersHtml;
+  // 로또 구매 실행
+  buyLotto();
+  
+  // 로또 메뉴로 돌아가기
+  showLotto();
 }
 
 function selectNumber(num) {
@@ -250,14 +279,28 @@ function selectNumber(num) {
     button.style.background = 'white';
     button.style.color = 'black';
     button.style.borderColor = '#ddd';
+    button.style.transform = 'scale(1)';
   } else if (selectedNumbers.length < 6) {
     selectedNumbers.push(num);
     button.style.background = '#ff6b6b';
     button.style.color = 'white';
     button.style.borderColor = '#ff6b6b';
+    button.style.transform = 'scale(1.1)';
   }
   
   document.getElementById('selectedCount').textContent = `선택된 번호: ${selectedNumbers.length}/6`;
+  
+  // 확인 버튼 활성화/비활성화
+  const confirmBtn = document.getElementById('confirmBtn');
+  if (confirmBtn) {
+    if (selectedNumbers.length === 6) {
+      confirmBtn.disabled = false;
+      confirmBtn.style.opacity = '1';
+    } else {
+      confirmBtn.disabled = true;
+      confirmBtn.style.opacity = '0.5';
+    }
+  }
 }
 
 function getTodaysLotto() {
@@ -469,8 +512,29 @@ function updateVisitorCount() {
 
 document.addEventListener('DOMContentLoaded', function() {
   const resultBox = document.getElementById('result');
-  resultBox.innerHTML = '원하는 메뉴를 선택해주세요!';
-  resultBox.className = 'result-box empty';
+  
+  // 새로고침 시 상태 복원
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lottoKey = `${now.toDateString()}-${currentHour}`;
+  const hasPurchasedLotto = localStorage.getItem(`hasPurchased-${lottoKey}`) === 'true';
+  const todaysFortune = localStorage.getItem('todaysFortune');
+  const fortuneDate = localStorage.getItem('fortuneDate');
+  const isFortuneValid = fortuneDate === now.toDateString();
+  
+  if (hasPurchasedLotto) {
+    // 로또 구매 상태라면 로또 화면으로
+    hideMainMenu();
+    showLotto();
+  } else if (isFortuneValid && todaysFortune) {
+    // 오늘의 운세가 있다면 운세 화면으로
+    hideMainMenu();
+    showFortune();
+  } else {
+    // 기본 메인 메뉴
+    resultBox.innerHTML = '원하는 메뉴를 선택해주세요!';
+    resultBox.className = 'result-box empty';
+  }
   
   updateVisitorCount();
 });
