@@ -35,6 +35,103 @@
   <div class="visitor-counter">
     <span>오늘 방문자: <span id="visitorCount">0</span>명</span>
   </div>
-  <script src="script.js"></script>
+
+  <!-- 로그인 UI -->
+  <div class="login-box" style="text-align:center; margin:20px;">
+    <button onclick="loginWithEmail()">이메일 로그인</button>
+    <button onclick="logout()">로그아웃</button>
+  </div>
+  <!-- Firebase SDK (Firestore, Storage도 추가) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAB_YVUYaPFvAah9y0409YtGsIC1fTw7oQ",
+    authDomain: "memory-21fb7.firebaseapp.com",
+    projectId: "memory-21fb7",
+    storageBucket: "memory-21fb7.appspot.com",
+    messagingSenderId: "45594315097",
+    appId: "1:45594315097:web:c7a1f8609130ee7c4f6448",
+    measurementId: "G-7F4WGD824F"
+  };
+
+  const app = firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // 이메일 회원가입 함수 (닉네임 포함)
+  async function registerWithEmail() {
+    const email = prompt("이메일 입력:");
+    const password = prompt("비밀번호 입력:");
+
+    try {
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+
+      // 이메일 인증 메일 전송
+      await user.sendEmailVerification();
+      alert("회원가입 성공! 이메일 인증 후 다시 로그인해주세요.");
+
+      // 닉네임 입력받아 Firestore 저장
+      const nickname = prompt("사용할 닉네임을 입력하세요:");
+      await db.collection("users").doc(user.uid).set({
+        email: user.email,
+        nickname: nickname,
+        createdAt: new Date()
+      });
+
+    } catch (error) {
+      alert("에러: " + error.message);
+    }
+  }
+
+  // 로그인 함수
+  async function loginWithEmail() {
+    const email = prompt("이메일 입력:");
+    const password = prompt("비밀번호 입력:");
+
+    try {
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
+        alert("이메일 인증 후 로그인 가능합니다.");
+        await auth.signOut();
+        return;
+      }
+
+      // Firestore에서 닉네임 가져오기
+      const doc = await db.collection("users").doc(user.uid).get();
+      const nickname = doc.exists ? doc.data().nickname : "닉네임 없음";
+
+      alert(`${nickname}님 환영합니다!`);
+
+    } catch (error) {
+      alert("에러: " + error.message);
+    }
+  }
+
+  // 로그아웃
+  function logout() {
+    auth.signOut();
+    alert("로그아웃 완료!");
+  }
+
+  // 로그인 상태 감지
+  auth.onAuthStateChanged(async (user) => {
+    const box = document.querySelector(".login-box");
+    if (user && user.emailVerified) {
+      const doc = await db.collection("users").doc(user.uid).get();
+      const nickname = doc.exists ? doc.data().nickname : "닉네임 없음";
+      box.innerHTML = `<p>${nickname}님 로그인 중</p><button onclick="logout()">로그아웃</button>`;
+    } else {
+      box.innerHTML = `
+        <button onclick="registerWithEmail()">회원가입</button>
+        <button onclick="loginWithEmail()">로그인</button>`;
+    }
+  });
+</script>
 </body>
 </html>
