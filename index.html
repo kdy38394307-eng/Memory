@@ -4,7 +4,257 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memory</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 100px;
+}
+
+.header {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  text-align: center;
+}
+
+.header h1 {
+  color: white;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+  margin: 0;
+  font-weight: 100;
+  letter-spacing: 8px;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-style: italic;
+  text-transform: lowercase;
+}
+
+.container {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  text-align: center;
+  max-width: 800px;
+  width: 90%;
+  min-height: 400px;
+}
+
+.main-menu {
+  margin-bottom: 2rem;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 2rem;
+}
+
+.fortune-btn, .lotto-btn {
+  border: none;
+  padding: 0;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 150px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fortune-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.lotto-btn {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+}
+
+.btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: white;
+}
+
+.btn-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.btn-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.back-button {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.back-button button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  margin: 10px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.fortune-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+}
+
+.lotto-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+}
+
+.back-button button:hover {
+  background: #5a6268;
+}
+
+button:hover {
+  background: #764ba2;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  background: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+button:disabled:hover {
+  background: #ccc !important;
+  transform: none !important;
+}
+
+.result-box {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border-left: 4px solid #667eea;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #333;
+  min-height: 200px;
+  text-align: left;
+}
+
+.result-box.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #999;
+  font-style: italic;
+}
+
+.visitor-counter {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  font-size: 0.9rem;
+  color: #666;
+  backdrop-filter: blur(10px);
+}
+
+.fortune-result {
+  text-align: center;
+  padding: 20px;
+}
+
+.fortune-text {
+  font-size: 1.3rem;
+  margin: 20px 0;
+  color: #333;
+}
+
+.fortune-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.lotto-result {
+  text-align: center;
+  padding: 20px;
+}
+
+.lotto-numbers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.lotto-ball {
+  background: #667eea;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.lotto-ball.bonus {
+  background: #ff6b6b;
+}
+
+.bonus-text {
+  font-size: 1.5rem;
+  color: #666;
+  margin: 0 10px;
+}
+
+.lotto-text {
+  font-size: 1.1rem;
+  color: #333;
+  margin-top: 15px;
+}
+  </style>
 </head>
 <body>
   <div class="header">
@@ -36,102 +286,493 @@
     <span>오늘 방문자: <span id="visitorCount">0</span>명</span>
   </div>
 
-  <!-- 로그인 UI -->
-  <div class="login-box" style="text-align:center; margin:20px;">
-    <button onclick="loginWithEmail()">이메일 로그인</button>
-    <button onclick="logout()">로그아웃</button>
+  <!-- 회원가입 모달 -->
+  <div id="registerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 20px; width: 450px; max-width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+      <h2 style="text-align: center; margin-bottom: 30px; color: #333; font-size: 1.8rem;">📧 회원가입</h2>
+      <div style="margin-bottom: 25px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">이메일 주소</label>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" id="emailLocal" placeholder="이메일" style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;">
+          <span style="font-size: 20px; color: #666; font-weight: bold;">@</span>
+          <select id="emailDomain" style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+            <option value="gmail.com">gmail.com</option>
+            <option value="naver.com">naver.com</option>
+            <option value="daum.net">daum.net</option>
+            <option value="kakao.com">kakao.com</option>
+            <option value="yahoo.com">yahoo.com</option>
+            <option value="outlook.com">outlook.com</option>
+            <option value="custom">직접입력</option>
+          </select>
+        </div>
+        <input type="text" id="customDomain" placeholder="도메인 직접입력" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin-top: 8px; display: none; font-size: 14px;">
+      </div>
+      <div style="text-align: center; margin-top: 30px;">
+        <button onclick="sendVerificationCode()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 14px 35px; border-radius: 25px; cursor: pointer; margin-right: 15px; font-size: 15px; font-weight: 600; transition: transform 0.2s;">인증번호 발송</button>
+        <button onclick="closeRegisterModal()" style="background: #95a5a6; color: white; border: none; padding: 14px 35px; border-radius: 25px; cursor: pointer; font-size: 15px; font-weight: 600; transition: transform 0.2s;">취소</button>
+      </div>
+    </div>
   </div>
-  <!-- Firebase SDK (Firestore, Storage도 추가) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+
+  <!-- 로그인 모달 -->
+  <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 20px; width: 450px; max-width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+      <h2 style="text-align: center; margin-bottom: 30px; color: #333; font-size: 1.8rem;">🔑 로그인</h2>
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">이메일 주소</label>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" id="loginEmailLocal" placeholder="이메일" style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          <span style="font-size: 20px; color: #666; font-weight: bold;">@</span>
+          <select id="loginEmailDomain" style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+            <option value="gmail.com">gmail.com</option>
+            <option value="naver.com">naver.com</option>
+            <option value="daum.net">daum.net</option>
+            <option value="kakao.com">kakao.com</option>
+            <option value="yahoo.com">yahoo.com</option>
+            <option value="outlook.com">outlook.com</option>
+            <option value="custom">직접입력</option>
+          </select>
+        </div>
+        <input type="text" id="loginCustomDomain" placeholder="도메인 직접입력" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin-top: 8px; display: none; font-size: 14px;">
+      </div>
+      <div style="margin-bottom: 25px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">비밀번호 (4자리)</label>
+        <input type="password" id="loginPassword" placeholder="4자리 비밀번호" maxlength="4" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; text-align: center; letter-spacing: 3px;">
+      </div>
+      <div style="text-align: center; margin-top: 30px;">
+        <button onclick="processLogin()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 14px 35px; border-radius: 25px; cursor: pointer; margin-right: 15px; font-size: 15px; font-weight: 600;">로그인</button>
+        <button onclick="closeLoginModal()" style="background: #95a5a6; color: white; border: none; padding: 14px 35px; border-radius: 25px; cursor: pointer; font-size: 15px; font-weight: 600;">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 인증번호 입력 모달 -->
+  <div id="verificationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 20px; width: 400px; max-width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
+      <h2 style="margin-bottom: 20px; color: #333; font-size: 1.6rem;">📱 인증번호 입력</h2>
+      <p style="color: #666; margin-bottom: 25px; line-height: 1.5;">이메일로 발송된 6자리 인증번호를 입력해주세요.</p>
+      <input type="text" id="verificationInput" placeholder="000000" maxlength="6" style="width: 200px; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 24px; text-align: center; letter-spacing: 5px; margin-bottom: 25px;">
+      <div>
+        <button onclick="verifyCode()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 14px 30px; border-radius: 25px; cursor: pointer; margin-right: 15px; font-size: 15px; font-weight: 600;">확인</button>
+        <button onclick="closeVerificationModal()" style="background: #95a5a6; color: white; border: none; padding: 14px 30px; border-radius: 25px; cursor: pointer; font-size: 15px; font-weight: 600;">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 알림 모달 -->
+  <div id="alertModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1001;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 15px; width: 350px; max-width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
+      <div id="alertIcon" style="font-size: 3rem; margin-bottom: 15px;"></div>
+      <div id="alertMessage" style="color: #333; margin-bottom: 25px; line-height: 1.5; font-size: 16px;"></div>
+      <button onclick="closeAlert()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 15px; font-weight: 600;">확인</button>
+    </div>
+  </div>
+
+  <div class="login-box" style="text-align:center; margin:20px;">
+    <button onclick="showRegisterModal()">회원가입</button>
+    <button onclick="loginWithEmail()">로그인</button>
+  </div>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAB_YVUYaPFvAah9y0409YtGsIC1fTw7oQ",
-    authDomain: "memory-21fb7.firebaseapp.com",
-    projectId: "memory-21fb7",
-    storageBucket: "memory-21fb7.appspot.com",
-    messagingSenderId: "45594315097",
-    appId: "1:45594315097:web:c7a1f8609130ee7c4f6448",
-    measurementId: "G-7F4WGD824F"
-  };
+  // 로컬스토리지 기반 시스템
 
-  const app = firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+  let pendingEmail = null;
+  let verificationCode = null;
+  let currentUser = null;
 
-  // 이메일 회원가입 함수 (닉네임 포함)
-  async function registerWithEmail() {
-    const email = prompt("이메일 입력:");
-    const password = prompt("비밀번호 입력:");
-
-    try {
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      const user = userCredential.user;
-
-      // 이메일 인증 메일 전송
-      await user.sendEmailVerification();
-      alert("회원가입 성공! 이메일 인증 후 다시 로그인해주세요.");
-
-      // 닉네임 입력받아 Firestore 저장
-      const nickname = prompt("사용할 닉네임을 입력하세요:");
-      await db.collection("users").doc(user.uid).set({
-        email: user.email,
-        nickname: nickname,
-        createdAt: new Date()
-      });
-
-    } catch (error) {
-      alert("에러: " + error.message);
-    }
+  // 운세 기능
+  function showFortune() {
+    document.getElementById('mainMenu').style.display = 'none';
+    document.getElementById('backBtn').style.display = 'block';
+    
+    const fortunes = [
+      '오늘은 좋은 일이 생길 것입니다! 🍀',
+      '새로운 기회가 찾아올 예정입니다 ✨',
+      '사랑하는 사람과 좋은 시간을 보내세요 💕',
+      '건강에 주의하시고 충분한 휴식을 취하세요 🌙',
+      '금전운이 상승하고 있습니다 💰',
+      '창의적인 아이디어가 떠오를 것입니다 💡'
+    ];
+    
+    const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    document.getElementById('result').innerHTML = `
+      <div class="fortune-result">
+        <h2>🔮 오늘의 운세</h2>
+        <p class="fortune-text">${randomFortune}</p>
+        <div class="fortune-date">${new Date().toLocaleDateString('ko-KR')}</div>
+      </div>
+    `;
   }
 
-  // 로그인 함수
-  async function loginWithEmail() {
-    const email = prompt("이메일 입력:");
-    const password = prompt("비밀번호 입력:");
+  // 로또 기능
+  function showLotto() {
+    document.getElementById('mainMenu').style.display = 'none';
+    document.getElementById('backBtn').style.display = 'block';
+    
+    const numbers = [];
+    while(numbers.length < 6) {
+      const num = Math.floor(Math.random() * 45) + 1;
+      if(!numbers.includes(num)) {
+        numbers.push(num);
+      }
+    }
+    numbers.sort((a, b) => a - b);
+    
+    const bonus = Math.floor(Math.random() * 45) + 1;
+    
+    document.getElementById('result').innerHTML = `
+      <div class="lotto-result">
+        <h2>🎰 로또 번호 추천</h2>
+        <div class="lotto-numbers">
+          ${numbers.map(num => `<span class="lotto-ball">${num}</span>`).join('')}
+          <span class="bonus-text">+</span>
+          <span class="lotto-ball bonus">${bonus}</span>
+        </div>
+        <p class="lotto-text">행운을 빕니다! 🍀</p>
+      </div>
+    `;
+  }
 
+  // 뒤로 가기
+  function goBack() {
+    document.getElementById('mainMenu').style.display = 'block';
+    document.getElementById('backBtn').style.display = 'none';
+    document.getElementById('result').innerHTML = '';
+  }
+
+  // 로컬스토리지로 방문자 수 관리
+  function updateVisitorCount() {
+    const today = new Date().toDateString();
+    const lastVisit = localStorage.getItem('lastVisit');
+    let count = parseInt(localStorage.getItem('visitorCount') || '0');
+    
+    if (lastVisit !== today) {
+      count = 1;
+      localStorage.setItem('lastVisit', today);
+    } else {
+      count++;
+    }
+    
+    localStorage.setItem('visitorCount', count.toString());
+    document.getElementById('visitorCount').textContent = count;
+  }
+
+  // 로컬스토리지 방문자 수 동기화 (단순 표시)
+  function syncVisitorCount() {
+    const count = localStorage.getItem('visitorCount') || '0';
+    document.getElementById('visitorCount').textContent = count;
+  }
+
+  // 회원가입 모달 표시
+  function showRegisterModal() {
+    document.getElementById('registerModal').style.display = 'block';
+  }
+
+  // 회원가입 모달 닫기
+  function closeRegisterModal() {
+    document.getElementById('registerModal').style.display = 'none';
+    document.getElementById('emailLocal').value = '';
+    document.getElementById('emailDomain').value = 'gmail.com';
+    document.getElementById('customDomain').style.display = 'none';
+  }
+
+
+
+  // 인증번호 발송
+  function sendVerificationCode() {
     try {
-      const userCredential = await auth.signInWithEmailAndPassword(email, password);
-      const user = userCredential.user;
-
-      if (!user.emailVerified) {
-        alert("이메일 인증 후 로그인 가능합니다.");
-        await auth.signOut();
+      console.log('인증번호 발송 시작');
+      
+      const emailLocal = document.getElementById('emailLocal');
+      const emailDomain = document.getElementById('emailDomain');
+      const customDomain = document.getElementById('customDomain');
+      
+      if (!emailLocal || !emailDomain) {
+        console.error('이메일 입력 요소를 찾을 수 없습니다.');
+        showAlert('❌', '페이지 로드 오류가 발생했습니다.');
+        return;
+      }
+      
+      const emailLocalValue = emailLocal.value.trim();
+      const emailDomainValue = emailDomain.value;
+      const customDomainValue = customDomain ? customDomain.value.trim() : '';
+      
+      console.log('이메일 입력값:', emailLocalValue, emailDomainValue, customDomainValue);
+      
+      if (!emailLocalValue) {
+        showAlert('⚠️', '이메일을 입력해주세요.');
+        return;
+      }
+      
+      const domain = emailDomainValue === 'custom' ? customDomainValue : emailDomainValue;
+      if (!domain) {
+        showAlert('⚠️', '도메인을 입력해주세요.');
+        return;
+      }
+      
+      const email = `${emailLocalValue}@${domain}`;
+      console.log('완성된 이메일:', email);
+      
+      // 이메일 형식 검증
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showAlert('⚠️', '올바른 이메일 형식이 아닙니다.');
         return;
       }
 
-      // Firestore에서 닉네임 가져오기
-      const doc = await db.collection("users").doc(user.uid).get();
-      const nickname = doc.exists ? doc.data().nickname : "닉네임 없음";
+      // 로컬스토리지에서 중복 확인
+      const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+      console.log('기존 사용자 수:', localUsers.length);
+      
+      if (localUsers.find(user => user.email === email)) {
+        showAlert('⚠️', '이미 가입된 이메일입니다.');
+        return;
+      }
 
-      alert(`${nickname}님 환영합니다!`);
+      // 인증번호 생성
+      verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      pendingEmail = email;
 
+      console.log(`인증번호 생성 완료: ${verificationCode}`);
+      
+      closeRegisterModal();
+      showAlert('📱', `인증번호가 ${email}로 발송되었습니다.\n\n개발용: ${verificationCode}`);
+      
+      setTimeout(() => {
+        closeAlert();
+        continueRegistration();
+      }, 2000);
+      
     } catch (error) {
-      alert("에러: " + error.message);
+      console.error('인증번호 발송 오류:', error);
+      showAlert('❌', '인증번호 발송 중 오류가 발생했습니다.');
+    }
+  }
+
+  // 인증번호 입력 모달 표시
+  function continueRegistration() {
+    document.getElementById('verificationModal').style.display = 'block';
+    document.getElementById('verificationInput').focus();
+  }
+
+  // 인증번호 모달 닫기
+  function closeVerificationModal() {
+    document.getElementById('verificationModal').style.display = 'none';
+    document.getElementById('verificationInput').value = '';
+    resetRegistration();
+  }
+
+  // 인증번호 확인
+  function verifyCode() {
+    try {
+      const inputCode = document.getElementById('verificationInput').value.trim();
+      
+      if (!inputCode) {
+        showAlert('⚠️', '인증번호를 입력해주세요.');
+        return;
+      }
+      
+      if (inputCode !== verificationCode) {
+        showAlert('❌', '인증번호가 틀렸습니다.');
+        return;
+      }
+
+      closeVerificationModal();
+      completeRegistration();
+      
+    } catch (error) {
+      console.error('인증번호 확인 오류:', error);
+      showAlert('❌', '인증번호 확인 중 오류가 발생했습니다.');
+    }
+  }
+
+  // 회원가입 완료
+  function completeRegistration() {
+    const password = prompt('4자리 비밀번호를 설정하세요:');
+    if (!password || password.length !== 4) {
+      showAlert('⚠️', '4자리 비밀번호를 입력하세요.');
+      resetRegistration();
+      return;
+    }
+
+    const nickname = prompt('닉네임을 입력하세요:');
+    if (!nickname) {
+      showAlert('⚠️', '닉네임을 입력해주세요.');
+      resetRegistration();
+      return;
+    }
+
+    // 로컬스토리지에 사용자 저장
+    const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+    const newUser = {
+      id: Date.now().toString(),
+      email: pendingEmail,
+      password: password,
+      nickname: nickname,
+      createdAt: new Date().toISOString()
+    };
+    localUsers.push(newUser);
+    localStorage.setItem('localUsers', JSON.stringify(localUsers));
+
+    showAlert('🎉', `${nickname}님, 회원가입 완료!`);
+    resetRegistration();
+    updateLoginUI();
+  }
+
+  // 회원가입 상태 초기화
+  function resetRegistration() {
+    pendingEmail = null;
+    verificationCode = null;
+  }
+
+  // 로그인 모달 표시
+  function showLoginModal() {
+    document.getElementById('loginModal').style.display = 'block';
+  }
+
+  // 로그인 모달 닫기
+  function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('loginEmailLocal').value = '';
+    document.getElementById('loginEmailDomain').value = 'gmail.com';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginCustomDomain').style.display = 'none';
+  }
+
+  // 로그인 처리
+  function processLogin() {
+    try {
+      const emailLocal = document.getElementById('loginEmailLocal').value.trim();
+      const emailDomain = document.getElementById('loginEmailDomain').value;
+      const customDomain = document.getElementById('loginCustomDomain').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      if (!emailLocal) {
+        showAlert('⚠️', '이메일을 입력해주세요.');
+        return;
+      }
+
+      const domain = emailDomain === 'custom' ? customDomain : emailDomain;
+      if (!domain) {
+        showAlert('⚠️', '도메인을 입력해주세요.');
+        return;
+      }
+
+      if (!password || password.length !== 4) {
+        showAlert('⚠️', '4자리 비밀번호를 입력해주세요.');
+        return;
+      }
+
+      const email = `${emailLocal}@${domain}`;
+
+      // 로컬스토리지에서 사용자 찾기
+      const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+      const user = localUsers.find(u => u.email === email && u.password === password);
+
+      if (!user) {
+        showAlert('❌', '이메일 또는 비밀번호가 틀렸습니다.');
+        return;
+      }
+
+      currentUser = {
+        id: user.id,
+        email: user.email,
+        nickname: user.nickname
+      };
+
+      // 로그인 시간 기록
+      user.lastLogin = new Date().toISOString();
+      localStorage.setItem('localUsers', JSON.stringify(localUsers));
+
+      closeLoginModal();
+      showAlert('🎉', `${currentUser.nickname}님 환영합니다!`);
+      updateLoginUI();
+      
+    } catch (error) {
+      console.error('로그인 중 오류:', error);
+      showAlert('❌', '로그인 중 오류가 발생했습니다.');
     }
   }
 
   // 로그아웃
   function logout() {
-    auth.signOut();
-    alert("로그아웃 완료!");
+    currentUser = null;
+    showAlert('👋', '로그아웃 완료!');
+    updateLoginUI();
   }
 
-  // 로그인 상태 감지
-  auth.onAuthStateChanged(async (user) => {
+  // 알림 모달 표시
+  function showAlert(icon, message) {
+    document.getElementById('alertIcon').textContent = icon;
+    document.getElementById('alertMessage').textContent = message;
+    document.getElementById('alertModal').style.display = 'block';
+  }
+
+  // 알림 모달 닫기
+  function closeAlert() {
+    document.getElementById('alertModal').style.display = 'none';
+  }
+
+  // 로그인 UI 업데이트
+  function updateLoginUI() {
     const box = document.querySelector(".login-box");
-    if (user && user.emailVerified) {
-      const doc = await db.collection("users").doc(user.uid).get();
-      const nickname = doc.exists ? doc.data().nickname : "닉네임 없음";
-      box.innerHTML = `<p>${nickname}님 로그인 중</p><button onclick="logout()">로그아웃</button>`;
+    if (currentUser) {
+      box.innerHTML = `
+        <p>🎉 ${currentUser.nickname}님 로그인 중</p>
+        <button onclick="logout()">로그아웃</button>`;
     } else {
       box.innerHTML = `
-        <button onclick="registerWithEmail()">회원가입</button>
-        <button onclick="loginWithEmail()">로그인</button>`;
+        <button onclick="showRegisterModal()">회원가입</button>
+        <button onclick="showLoginModal()">로그인</button>`;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    updateLoginUI();
+    updateVisitorCount();
+    syncVisitorCount();
+    
+    console.log('로컬스토리지 기반 시스템 시작');
+    
+    // 도메인 선택 이벤트 리스너 (회원가입)
+    const domainSelect = document.getElementById('emailDomain');
+    const customDomain = document.getElementById('customDomain');
+    
+    if (domainSelect) {
+      domainSelect.addEventListener('change', function() {
+        if (this.value === 'custom') {
+          customDomain.style.display = 'block';
+        } else {
+          customDomain.style.display = 'none';
+        }
+      });
+    }
+
+    // 도메인 선택 이벤트 리스너 (로그인)
+    const loginDomainSelect = document.getElementById('loginEmailDomain');
+    const loginCustomDomain = document.getElementById('loginCustomDomain');
+    
+    if (loginDomainSelect) {
+      loginDomainSelect.addEventListener('change', function() {
+        if (this.value === 'custom') {
+          loginCustomDomain.style.display = 'block';
+        } else {
+          loginCustomDomain.style.display = 'none';
+        }
+      });
+    }
+
+    // 인증번호 입력 시 자동 이동
+    const verificationInput = document.getElementById('verificationInput');
+    if (verificationInput) {
+      verificationInput.addEventListener('input', function() {
+        if (this.value.length === 6) {
+          setTimeout(() => verifyCode(), 500);
+        }
+      });
     }
   });
 </script>
 </body>
 </html>
+

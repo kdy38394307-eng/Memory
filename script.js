@@ -1,3 +1,16 @@
+auth.onAuthStateChanged(async (user) => {
+  const box = document.querySelector(".login-box");
+  if (user && user.emailVerified) {
+    const doc = await db.collection("users").doc(user.uid).get();
+    const nickname = doc.exists ? doc.data().nickname : "닉네임 없음";
+    box.innerHTML = `<p>${nickname}님 로그인 중</p><button onclick="logout()">로그아웃</button>`;
+  } else {
+    box.innerHTML = `
+      <button onclick="registerWithEmail()">회원가입</button>
+      <button onclick="loginWithEmail()">로그인</button>`;
+  }
+});
+
 // Memory 사이트 JavaScript
 console.log('Script loading...');
 
