@@ -1,16 +1,3 @@
-auth.onAuthStateChanged(async (user) => {
-  const box = document.querySelector(".login-box");
-  if (user && user.emailVerified) {
-    const doc = await db.collection("users").doc(user.uid).get();
-    const nickname = doc.exists ? doc.data().nickname : "닉네임 없음";
-    box.innerHTML = `<p>${nickname}님 로그인 중</p><button onclick="logout()">로그아웃</button>`;
-  } else {
-    box.innerHTML = `
-      <button onclick="registerWithEmail()">회원가입</button>
-      <button onclick="loginWithEmail()">로그인</button>`;
-  }
-});
-
 // Memory 사이트 JavaScript
 console.log('Script loading...');
 
@@ -33,13 +20,13 @@ let myNumbers = [];
 let countdownInterval;
 
 function hideMainMenu() {
-  document.getElementById('mainMenu').style.display = 'none';
-  document.getElementById('backBtn').style.display = 'block';
+  document.getElementById('mainMenu').classList.add('hidden');
+  document.getElementById('backBtn').classList.remove('hidden');
 }
 
 function showMainMenu() {
-  document.getElementById('mainMenu').style.display = 'block';
-  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('mainMenu').classList.remove('hidden');
+  document.getElementById('backBtn').classList.add('hidden');
 }
 
 function goBack() {
@@ -68,18 +55,18 @@ function getTodaysFortune() {
 }
 
 function showFortune() {
-  console.log('showFortune called');
-  hideMainMenu();
-  const todaysFortune = getTodaysFortune();
-  const resultBox = document.getElementById('result');
+  console.log('showFortune called'); // 함수 실행 확인용 로그
+  hideMainMenu(); // 메인 메뉴 숨기는 함수 실행
+  const todaysFortune = getTodaysFortune(); // 오늘 운세 가져오기
+  const resultBox = document.getElementById('result'); //id="result" 요소 선택
   resultBox.innerHTML = `
-    <div style="text-align: center; padding: 20px;">
-      <h2 style="color: #667eea; margin-bottom: 30px;">🔮 오늘의 운세</h2>
-      <div style="font-size: 1.4rem; line-height: 1.8; color: #333; font-weight: bold; margin-bottom: 30px;">
+    <div class="fortune-container">
+     <h2 class="fortune-title">🔮 오늘의 운세</h2>
+     <div class="fortune-text">
         ${todaysFortune}
       </div>
-      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
-        <p style="color: #666; font-size: 0.9rem; margin: 0;">📅 오늘의 운세는 하루에 한 번만 새로 생성됩니다.</p>
+       <div class="fortune-info">
+       <p class="fortune-info-text">📅 오늘의 운세는 하루에 한 번만 새로 생성됩니다.</p>
       </div>
     </div>
   `;
@@ -408,11 +395,254 @@ function updateVisitorCount() {
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log('DOM loaded');
-  const resultBox = document.getElementById('result');
-  resultBox.innerHTML = '원하는 메뉴를 선택해주세요!';
-  resultBox.className = 'result-box empty';
-  
+  updateLoginUI();
   updateVisitorCount();
+  
+  // 버튼 이벤트 리스너 추가
+  document.getElementById("fortuneBtn").addEventListener("click", showFortune);
+  document.getElementById("lottoBtn").addEventListener("click", showLotto);
+  document.getElementById("backBtnInner").addEventListener("click", goBack);
+  document.getElementById("sendCodeBtn").addEventListener("click", sendVerificationCode);
+  document.getElementById("cancelRegisterBtn").addEventListener("click", closeRegisterModal);
+  document.getElementById("processLoginBtn").addEventListener("click", processLogin);
+  document.getElementById("cancelLoginBtn").addEventListener("click", closeLoginModal);
+  document.getElementById("verifyBtn").addEventListener("click", verifyCode);
+  document.getElementById("cancelVerifyBtn").addEventListener("click", closeVerificationModal);
+  document.getElementById("alertOkBtn").addEventListener("click", closeAlert);
+  
+  // 도메인 선택 이벤트 리스너
+  const emailDomain = document.getElementById('emailDomain');
+  const customDomain = document.getElementById('customDomain');
+  const loginEmailDomain = document.getElementById('loginEmailDomain');
+  const loginCustomDomain = document.getElementById('loginCustomDomain');
+  
+  if (emailDomain) {
+    emailDomain.addEventListener('change', function() {
+      if (this.value === 'custom') {
+        customDomain.classList.remove('hidden');
+      } else {
+        customDomain.classList.add('hidden');
+      }
+    });
+  }
+  
+  if (loginEmailDomain) {
+    loginEmailDomain.addEventListener('change', function() {
+      if (this.value === 'custom') {
+        loginCustomDomain.classList.remove('hidden');
+      } else {
+        loginCustomDomain.classList.add('hidden');
+      }
+    });
+  }
 });
+
+// 로그인 UI 업데이트
+function updateLoginUI() {
+  const loginBox = document.querySelector('.login-box');
+  const mainMenu = document.getElementById('mainMenu');
+  const welcomeMessage = document.getElementById('welcomeMessage');
+  const userEmail = localStorage.getItem('userEmail');
+  const userNickname = localStorage.getItem('userNickname');
+  
+  // 메인 메뉴는 항상 보이게 설정
+  if (mainMenu) mainMenu.style.display = 'block';
+  if (welcomeMessage) welcomeMessage.style.display = 'none';
+  
+  if (userEmail && userNickname) {
+    // 로그인 상태 (닉네임 표시)
+    loginBox.innerHTML = `
+      <p>🎉 ${userNickname}님 로그인 중</p>
+      <button id="logoutBtn">로그아웃</button>
+    `;
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+  } else {
+    // 비로그인 상태
+    loginBox.innerHTML = `
+      <button id="registerBtn">회원가입</button>
+      <button id="loginBtn">로그인</button>
+    `;
+    document.getElementById('registerBtn').addEventListener('click', showRegisterModal);
+    document.getElementById('loginBtn').addEventListener('click', showLoginModal);
+  }
+}
+
+function logout() {
+  localStorage.removeItem('userEmail');
+  localStorage.removeItem('userNickname');
+  showAlert('로그아웃 완료!', 'success');
+  updateLoginUI();
+}
+
+// 회원가입 모달 관련 함수들
+function showRegisterModal() {
+  document.getElementById('registerModal').classList.remove('hidden');
+}
+
+function closeRegisterModal() {
+  document.getElementById('registerModal').classList.add('hidden');
+  // 입력 필드 초기화
+  document.getElementById('emailLocal').value = '';
+  document.getElementById('emailDomain').value = 'gmail.com';
+  document.getElementById('customDomain').value = '';
+  document.getElementById('customDomain').classList.add('hidden');
+}
+
+function showLoginModal() {
+  document.getElementById('loginModal').classList.remove('hidden');
+}
+
+function closeLoginModal() {
+  document.getElementById('loginModal').classList.add('hidden');
+  // 입력 필드 초기화
+  document.getElementById('loginEmailLocal').value = '';
+  document.getElementById('loginEmailDomain').value = 'gmail.com';
+  document.getElementById('loginCustomDomain').value = '';
+  document.getElementById('loginCustomDomain').classList.add('hidden');
+  document.getElementById('loginPassword').value = '';
+}
+
+function sendVerificationCode() {
+  const emailLocal = document.getElementById('emailLocal').value.trim();
+  const emailDomain = document.getElementById('emailDomain').value;
+  const customDomain = document.getElementById('customDomain').value.trim();
+  
+  if (!emailLocal) {
+    showAlert('이메일을 입력해주세요.', 'error');
+    return;
+  }
+  
+  const domain = emailDomain === 'custom' ? customDomain : emailDomain;
+  if (!domain) {
+    showAlert('도메인을 입력해주세요.', 'error');
+    return;
+  }
+  
+  const fullEmail = `${emailLocal}@${domain}`;
+  
+  // 이메일 형식 검증
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(fullEmail)) {
+    showAlert('올바른 이메일 형식이 아닙니다.', 'error');
+    return;
+  }
+  
+  // 인증번호 생성 및 저장
+  const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+  localStorage.setItem('verificationCode', verificationCode);
+  localStorage.setItem('registerEmail', fullEmail);
+  
+  closeRegisterModal();
+  showVerificationModal();
+  showAlert(`${fullEmail}로 인증번호가 발송되었습니다.\n인증번호: ${verificationCode}`, 'success');
+}
+
+function showVerificationModal() {
+  document.getElementById('verificationModal').classList.remove('hidden');
+}
+
+function closeVerificationModal() {
+  document.getElementById('verificationModal').classList.add('hidden');
+  document.getElementById('verificationInput').value = '';
+}
+
+function verifyCode() {
+  const inputCode = document.getElementById('verificationInput').value.trim();
+  const savedCode = localStorage.getItem('verificationCode');
+  
+  if (!inputCode) {
+    showAlert('인증번호를 입력해주세요.', 'error');
+    return;
+  }
+  
+  if (inputCode === savedCode) {
+    const email = localStorage.getItem('registerEmail');
+    closeVerificationModal();
+    
+    // 닉네임 입력 받기
+    const nickname = prompt('닉네임을 입력해주세요:');
+    if (!nickname) {
+      showAlert('닉네임을 입력해주세요.', 'error');
+      return;
+    }
+    
+    // 회원가입 완료 처리
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userNickname', nickname);
+    localStorage.removeItem('verificationCode');
+    localStorage.removeItem('registerEmail');
+    
+    showAlert(`${nickname}님, 회원가입이 완료되었습니다!`, 'success');
+    updateLoginUI();
+  } else {
+    showAlert('인증번호가 일치하지 않습니다.', 'error');
+  }
+}
+
+function processLogin() {
+  const emailLocal = document.getElementById('loginEmailLocal').value.trim();
+  const emailDomain = document.getElementById('loginEmailDomain').value;
+  const customDomain = document.getElementById('loginCustomDomain').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  
+  if (!emailLocal || !password) {
+    showAlert('이메일과 비밀번호를 입력해주세요.', 'error');
+    return;
+  }
+  
+  const domain = emailDomain === 'custom' ? customDomain : emailDomain;
+  if (!domain) {
+    showAlert('도메인을 입력해주세요.', 'error');
+    return;
+  }
+  
+  const fullEmail = `${emailLocal}@${domain}`;
+  
+  // 간단한 로그인 처리 (실제로는 서버에서 검증)
+  if (password.length === 4) {
+    closeLoginModal();
+    
+    // 닉네임 입력 받기
+    const nickname = prompt('닉네임을 입력해주세요:');
+    if (!nickname) {
+      showAlert('닉네임을 입력해주세요.', 'error');
+      return;
+    }
+    
+    localStorage.setItem('userEmail', fullEmail);
+    localStorage.setItem('userNickname', nickname);
+    showAlert(`${nickname}님, 로그인되었습니다!`, 'success');
+    updateLoginUI();
+  } else {
+    showAlert('비밀번호는 4자리여야 합니다.', 'error');
+  }
+}
+
+function showAlert(message, type = 'info') {
+  const alertModal = document.getElementById('alertModal');
+  const alertIcon = document.getElementById('alertIcon');
+  const alertMessage = document.getElementById('alertMessage');
+  
+  // 아이콘 설정
+  switch(type) {
+    case 'success':
+      alertIcon.textContent = '✅';
+      break;
+    case 'error':
+      alertIcon.textContent = '❌';
+      break;
+    default:
+      alertIcon.textContent = 'ℹ️';
+  }
+  
+  alertMessage.textContent = message;
+  alertModal.classList.remove('hidden');
+}
+
+function closeAlert() {
+  document.getElementById('alertModal').classList.add('hidden');
+}
+
+
 
 console.log('Script loaded successfully');

@@ -125,6 +125,14 @@ button {
   transition: all 0.3s ease;
 }
 
+.login-box button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 10px;
+}
+
 .fortune-btn:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
@@ -192,4 +200,175 @@ button:disabled:hover {
   font-size: 0.9rem;
   color: #666;
   backdrop-filter: blur(10px);
+}
+
+.welcome-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #333;
+}
+
+.welcome-message h2 {
+  margin-bottom: 15px;
+  font-size: 1.8rem;
+  color: #667eea;
+}
+
+.welcome-message p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.login-box {
+  text-align: center;
+  margin: 20px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  width: 450px;
+  max-width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal-content h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+.email-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.email-input input {
+  flex: 1;
+}
+
+.email-input span {
+  font-size: 20px;
+  color: #666;
+  font-weight: bold;
+}
+
+.email-input select {
+  flex: 1;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.modal-buttons {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.modal-buttons button {
+  margin: 0 8px;
+  padding: 14px 35px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.secondary {
+  background: #95a5a6;
+  color: white;
+}
+
+.alert {
+  text-align: center;
+  width: 350px;
+}
+
+.alert-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+#alertMessage {
+  color: #333;
+  margin-bottom: 25px;
+  line-height: 1.5;
+  font-size: 16px;
+}
+.fortune-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.fortune-title {
+  color: #667eea;
+  margin-bottom: 30px;
+}
+
+.fortune-text {
+  font-size: 1.4rem;
+  line-height: 1.8;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.fortune-info {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.fortune-info-text {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
 }
