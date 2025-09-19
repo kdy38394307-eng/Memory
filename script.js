@@ -179,9 +179,9 @@ function setManualMode() {
   document.getElementById('manualBtn').style.color = 'white';
   
   let numbersHtml = `
-    <div style="padding: 30px; background: #fff3cd; border-radius: 15px;">
-      <p style="text-align: center; font-size: 1.1rem; margin-bottom: 25px;">✋ 번호를 선택해주세요 (6개)</p>
-      <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 10px; max-width: 600px; margin: 0 auto;">
+    <div style="padding: 30px; background: #cdffe0ff; border-radius: 15px;">
+      <p style="text-align: center; font-size: 1rem; margin-bottom: 40px;">✋ 번호를 선택해주세요 (6개)</p>
+      <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 10px; max-width: 1000px; margin: 0; auto;">
   `;
   
   for (let i = 1; i <= 45; i++) {
@@ -190,7 +190,7 @@ function setManualMode() {
   
   numbersHtml += `
       </div>
-      <div id="selectedCount" style="text-align: center; margin-top: 25px; font-size: 1.2rem; color: #ff6b6b; font-weight: bold;">선택된 번호: 0/6</div>
+      <div id="selectedCount" style="text-align: center; margin-top: 25px; font-size: 1.2rem; color: #ff6b6bff; font-weight: bold;">선택된 번호: 0/6</div>
     </div>
   `;
   
@@ -601,6 +601,57 @@ function processLogin() {
   // 간단한 로그인 처리 (실제로는 서버에서 검증)
   if (password.length === 4) {
     closeLoginModal();
+
+// app.js
+const express = require("express");
+const axios = require("axios");
+const qs = require("qs");
+require("dotenv").config();
+
+const app = express();
+
+app.get("/auth/kakao/callback", async (req, res) => {
+  const { code } = req.query;
+
+  try {
+    // 1) 코드 → 토큰 교환
+    const tokenRes = await axios.post(
+      "https://kauth.kakao.com/oauth/token",
+      qs.stringify({
+        grant_type: "authorization_code",
+        client_id: "15b401d23c57ac2b92d30f3ea81d1ecb",
+        redirect_uri: "http://127.0.0.1:5500",
+        code,
+        client_secret: "iGG2CfXb7gFBu7MOc2K4F649qNzDA6l9", // 선택
+      }),
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    );
+
+    const accessToken = tokenRes.data.access_token;
+
+    // 2) 사용자 정보 요청
+    const userRes = await axios.get("https://kapi.kakao.com/v2/user/me", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    const kakaoId = userRes.data.id;
+    const nickname =
+      userRes.data.kakao_account?.profile?.nickname ||
+      userRes.data.properties?.nickname ||
+      null;
+
+    // 3) DB에 kakaoId 확인
+    // - 없으면 신규 가입 (닉네임 입력 받기 or 기본 닉네임 저장)
+    // - 있으면 바로 로그인 처리
+    // 여기서는 테스트용으로 그냥 출력
+    res.json({ kakaoId, nickname });
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).send("카카오 로그인 실패");
+  }
+});
+
+app.listen(3000, () => console.log("Server running on http://127.0.0.1:5500"));
     
     // 닉네임 입력 받기
     const nickname = prompt('닉네임을 입력해주세요:');
