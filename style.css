@@ -55,12 +55,12 @@ body {
 
 .menu-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 30px;
   margin-bottom: 2rem;
 }
 
-.fortune-btn, .lotto-btn {
+.fortune-btn, .lotto-btn, .dinner-btn {
   border: none;
   padding: 0;
   border-radius: 20px;
@@ -77,6 +77,10 @@ body {
 
 .lotto-btn {
   background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+}
+
+.dinner-btn {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
 }
 
 .btn-content {
@@ -141,6 +145,11 @@ button {
 .lotto-btn:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+}
+
+.dinner-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(40, 167, 69, 0.4);
 }
 
 .back-button button:hover {

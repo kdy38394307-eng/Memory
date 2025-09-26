@@ -14,6 +14,24 @@ const fortunes = [
   "카페에서 자리 바로 잡는 날 ☕"
 ];
 
+const dinnerMenus = [
+  "치킨 🍗",
+  "피자 🍕",
+  "짜장면 🍜",
+  "배달음식 🍲",
+  "한식 🍱",
+  "일식 🍣",
+  "중식 🥢",
+  "양식 🍝",
+  "분식 🌮",
+  "도시락 🍱",
+  "삼겹살 🥩",
+  "라면 🍜",
+  "버거 🍔",
+  "샐러드 🥗",
+  "스테이크 🥩"
+];
+
 let selectedNumbers = [];
 let isAutoMode = true;
 let myNumbers = [];
@@ -55,18 +73,51 @@ function getTodaysFortune() {
 }
 
 function showFortune() {
-  console.log('showFortune called'); // 함수 실행 확인용 로그
-  hideMainMenu(); // 메인 메뉴 숨기는 함수 실행
-  const todaysFortune = getTodaysFortune(); // 오늘 운세 가져오기
-  const resultBox = document.getElementById('result'); //id="result" 요소 선택
+  console.log('showFortune called');
+  hideMainMenu();
+  const todaysFortune = getTodaysFortune();
+  const resultBox = document.getElementById('result');
   resultBox.innerHTML = `
-    <div class="fortune-container">
-     <h2 class="fortune-title">🔮 오늘의 운세</h2>
-     <div class="fortune-text">
+    <div style="text-align: center; padding: 20px;">
+      <h2 style="color: #667eea; margin-bottom: 30px;">🔮 오늘의 운세</h2>
+      <div style="font-size: 1.4rem; line-height: 1.8; color: #333; font-weight: bold; margin-bottom: 30px;">
         ${todaysFortune}
       </div>
-       <div class="fortune-info">
-       <p class="fortune-info-text">📅 오늘의 운세는 하루에 한 번만 새로 생성됩니다.</p>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+        <p style="color: #666; font-size: 0.9rem; margin: 0;">📅 오늘의 운세는 하루에 한 번만 새로 생성됩니다.</p>
+      </div>
+    </div>
+  `;
+  resultBox.className = 'result-box';
+}
+
+function getTodaysDinner() {
+  const today = new Date().toDateString();
+  const savedDate = localStorage.getItem('dinnerDate');
+  
+  if (savedDate !== today) {
+    const randomDinner = dinnerMenus[Math.floor(Math.random() * dinnerMenus.length)];
+    localStorage.setItem('todaysDinner', randomDinner);
+    localStorage.setItem('dinnerDate', today);
+    return randomDinner;
+  } else {
+    return localStorage.getItem('todaysDinner') || dinnerMenus[0];
+  }
+}
+
+function showDinner() {
+  console.log('showDinner called');
+  hideMainMenu();
+  const todaysDinner = getTodaysDinner();
+  const resultBox = document.getElementById('result');
+  resultBox.innerHTML = `
+    <div style="text-align: center; padding: 20px;">
+      <h2 style="color: #28a745; margin-bottom: 30px;">🍽️ 오늘의 저녁메뉴</h2>
+      <div style="font-size: 1.4rem; line-height: 1.8; color: #333; font-weight: bold; margin-bottom: 30px;">
+        ${todaysDinner}
+      </div>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+        <p style="color: #666; font-size: 0.9rem; margin: 0;">🍽️ 오늘의 저녁메뉴는 하루에 한 번만 새로 생성됩니다.</p>
       </div>
     </div>
   `;
@@ -401,6 +452,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // 버튼 이벤트 리스너 추가
   document.getElementById("fortuneBtn").addEventListener("click", showFortune);
   document.getElementById("lottoBtn").addEventListener("click", showLotto);
+  document.getElementById("dinnerBtn").addEventListener("click", showDinner);
   document.getElementById("backBtnInner").addEventListener("click", goBack);
   document.getElementById("sendCodeBtn").addEventListener("click", sendVerificationCode);
   document.getElementById("cancelRegisterBtn").addEventListener("click", closeRegisterModal);
@@ -603,6 +655,7 @@ function processLogin() {
     closeLoginModal();
 
 // app.js
+
 const express = require("express");
 const axios = require("axios");
 const qs = require("qs");
@@ -620,7 +673,7 @@ app.get("/auth/kakao/callback", async (req, res) => {
       qs.stringify({
         grant_type: "authorization_code",
         client_id: "15b401d23c57ac2b92d30f3ea81d1ecb",
-        redirect_uri: "http://127.0.0.1:5500",
+        redirect_uri: "http://localhost:3000/auth/kakao/callback",
         code,
         client_secret: "iGG2CfXb7gFBu7MOc2K4F649qNzDA6l9", // 선택
       }),
@@ -651,7 +704,26 @@ app.get("/auth/kakao/callback", async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("Server running on http://127.0.0.1:5500"));
+app.listen(3000, () => console.log("Server running on http://localhost:3000/auth/kakao/callback"));
+
+const handleKakaoLogin = async () => {
+  const res = await axios.get("/auth/kakao/callback?code=..."); // 실제 코드 사용
+  const { kakaoId, nickname } = res.data;
+
+  if (!nickname) {
+    // 신규 사용자 → 닉네임 입력 화면 보여주기
+    setShowNicknameForm(true);
+    setNewUserId(kakaoId);
+  } else {
+    // 기존 사용자 → 로그인 처리
+    loginUser(kakaoId, nickname);
+  }
+};
+
+const submitNickname = async (nickname) => {
+  await axios.post("/auth/save-nickname", { kakaoId: newUserId, nickname });
+  loginUser(newUserId, nickname);
+};
     
     // 닉네임 입력 받기
     const nickname = prompt('닉네임을 입력해주세요:');

@@ -28,6 +28,12 @@
             <span class="btn-text">Lotto</span>
           </div>
         </button>
+        <button id="dinnerBtn" class="dinner-btn">
+          <div class="btn-content">
+            <span class="btn-icon">🍽️</span>
+            <span class="btn-text">저녁메뉴 추천</span>
+          </div>
+        </button>
       </div>
     </div>
     
@@ -119,11 +125,47 @@
   // 2) 버튼 클릭 시 로그인 시도
   document.getElementById("kakaoLoginBtn").addEventListener("click", function() {
     Kakao.Auth.authorize({
-      redirectUri: "http://127.0.0.1:5500", // 콜백 URL
+      redirectUri: "http://localhost:3000/auth/kakao/callback", // 콜백 URL
       scope: "profile_nickname", // 닉네임만 동의받음
       state: Math.random().toString(36).substring(2) // CSRF 방지용
     });
   });
+</script>
+
+<!-- Firebase SDKs -->
+<script type="module">
+  // Firebase v9+ (모듈 방식)
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+  // Firebase 설정
+  const firebaseConfig = {
+    apiKey: "AIzaSyAB_YYUYaPFvAah9y04O9YtGslC1fIw7oQ",
+    authDomain: "memory-21fb7.firebaseapp.com",
+    projectId: "memory-21fb7",
+    storageBucket: "memory-21fb7.firebasestorage.app",
+    messagingSenderId: "45594315097",
+    appId: "1:45594315097:web:c7a1f8609130ee7c4f6448",
+    measurementId: "G-7F4WGD024F"
+  };
+
+  // Firebase 초기화
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+
+  // 카카오 로그인 성공 후 사용자 정보 저장
+  async function saveUser(kakaoId, nickname) {
+    await setDoc(doc(db, "users", String(kakaoId)), {
+      nickname: nickname || null,
+      createdAt: new Date()
+    });
+    console.log("사용자 저장 완료!");
+  }
+
+  // 예시: 로그인 성공 시 실행
+  // saveUser("1234567890", "홍길동");
 </script>
 
   <!-- 인증번호 모달 -->
